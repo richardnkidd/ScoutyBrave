@@ -5,20 +5,27 @@ export function createPlayer(k) {
         k.area(),
         k.body(),
         k.anchor('center'),
-        k.scale(0.5), // Scale up the pixel art for better visibility
+        k.scale(0.3), // Scale up the pixel art for better visibility
         'player'
     ]);
 
     // Player state
-    let isOnGround = false;
+    let isOnGround = true; // Start on ground
     let isCowering = false;
     let moveSpeed = 200;
     let jumpForce = 400;
 
+    // Ground collision detection
+    player.onCollide('ground', () => {
+        isOnGround = true;
+    });
+
     // Movement
     k.onUpdate(() => {
-        // Check if on ground - using collision with ground tag
-        isOnGround = player.isGrounded();
+        // Check velocity to determine if falling/jumping
+        if (player.vel.y > 50) {
+            isOnGround = false;
+        }
 
         // Horizontal movement
         if (k.isKeyDown('left') && !isCowering) {
@@ -33,13 +40,13 @@ export function createPlayer(k) {
             if (!isCowering) {
                 isCowering = true;
                 player.opacity = 0.7; // Darker when cowering
-                player.scaleTo(0.4); // Smaller when cowering (scaled from base 0.5)
+                player.scaleTo(0.25); // Smaller when cowering (scaled from base 0.3)
             }
         } else {
             if (isCowering) {
                 isCowering = false;
                 player.opacity = 1;
-                player.scaleTo(0.5);
+                player.scaleTo(0.3);
             }
         }
 
