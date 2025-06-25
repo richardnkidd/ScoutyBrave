@@ -89,8 +89,18 @@ The project uses a dual approach:
 
 ## Changelog
 
-Changelog:
-- June 25, 2025. Initial setup
+Recent Changes:
+- June 25, 2025: Initial setup with Kaboom.js game engine
+- June 25, 2025: Added pixel art sprites for Scouty, obstacles, and hearts
+- June 25, 2025: Implemented cityscape background with proper scaling
+- June 25, 2025: Fixed sprite scaling and visibility issues
+- June 25, 2025: Comprehensive game improvements:
+  * Full background display without zoom
+  * Scouty scaled to 0.65 (~20px tall) with matching hitbox
+  * Obstacles with black outlines and proper z-layering
+  * Fixed jump mechanics with space/up keys and gravity
+  * Camera follows player horizontally while keeping horizon level
+  * Title screen polished with centered text and background opacity
 
 ## User Preferences
 
