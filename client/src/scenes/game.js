@@ -93,6 +93,7 @@ export function initGame(k) {
             if (obstacleTimer > k.rand(1.5, 3.0)) {
                 spawnObstacle(k, gameSpeed);
                 obstacleTimer = 0;
+                console.log('Obstacle spawn triggered');
             }
             
             // Spawn hearts less frequently

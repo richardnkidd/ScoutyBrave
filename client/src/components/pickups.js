@@ -1,13 +1,16 @@
 export function spawnHeart(k, gameSpeed) {
     const heart = k.add([
         k.sprite('heart'),
-        k.pos(k.width() + 50, k.height() - 60 - k.rand(0, 100)),
+        k.pos(k.width() + 50, k.height() - 100 - k.rand(0, 100)),
         k.area(),
         k.move(k.LEFT, gameSpeed * 0.8), // Hearts move slightly slower
         k.anchor('center'),
-        k.scale(0.3),
+        k.scale(0.4),
+        k.outline(2, k.rgb(255, 255, 255)), // Add white outline for visibility
         'heart'
     ]);
+    
+    console.log('Spawned heart at position:', heart.pos.x, heart.pos.y);
 
     // Floating animation
     heart.onUpdate(() => {

@@ -70,8 +70,9 @@ export function createPlayer(k) {
     k.onKeyPress('space', () => {
         console.log('Space pressed! isOnGround:', isOnGround, 'isCowering:', isCowering);
         if (isOnGround && !isCowering) {
-            player.jump(jumpForce);
-            console.log('Jump executed!');
+            player.vel.y = -jumpForce; // Direct velocity assignment instead of jump()
+            isOnGround = false; // Set to false immediately after jump
+            console.log('Jump executed! Velocity set to:', -jumpForce);
         }
     });
 

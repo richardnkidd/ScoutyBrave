@@ -22,14 +22,17 @@ export function spawnObstacle(k, gameSpeed) {
 
     const obstacle = k.add([
         k.sprite(type),
-        k.pos(k.width() + 50, k.height() - 40 - yOffset),
+        k.pos(k.width() + 50, k.height() - 60 - yOffset), // Move higher up from ground
         k.area(),
         k.move(k.LEFT, gameSpeed),
         k.anchor('center'),
         k.scale(scale),
+        k.outline(2, k.rgb(255, 0, 0)), // Add red outline for visibility
         'obstacle',
         type
     ]);
+    
+    console.log('Spawned obstacle:', type, 'at position:', obstacle.pos.x, obstacle.pos.y, 'scale:', scale);
 
     // Add some variation to leaf movement
     if (type === 'leaf') {
