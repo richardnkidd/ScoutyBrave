@@ -27,6 +27,7 @@ k.loadSprite('box', '/sprites/box.png');
 k.loadSprite('bag', '/sprites/bag.png');
 k.loadSprite('leaf', '/sprites/leaf.png');
 k.loadSprite('heart', '/sprites/heart.png');
+k.loadSprite('cityscape_bg', '/sprites/cityscape_bg.png');
 
 // Load sounds
 k.loadSound('background', '/sounds/background.mp3');

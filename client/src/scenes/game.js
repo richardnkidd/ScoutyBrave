@@ -7,16 +7,24 @@ export function initGame(k) {
         // Reset game state
         window.resetGameState();
         
+        // Add background
+        const background = k.add([
+            k.sprite('cityscape_bg'),
+            k.pos(0, 0),
+            k.scale(k.width() / 1024, k.height() / 576), // Scale to fit canvas
+            k.z(-10) // Behind everything
+        ]);
+        
         // Game variables
         let obstacleTimer = 0;
         let heartTimer = 0;
         let gameSpeed = 100;
         
-        // Create ground
+        // Create invisible ground for physics
         const ground = k.add([
             k.rect(k.width(), 40),
             k.pos(0, k.height() - 40),
-            k.color(101, 67, 33),
+            k.opacity(0), // Make invisible since background has ground
             k.area(),
             k.body({ isStatic: true }),
             'ground'
