@@ -1,12 +1,7 @@
 export function initTitle(k) {
     k.scene('title', () => {
-        // Add background
-        const background = k.add([
-            k.sprite('cityscape_bg'),
-            k.pos(0, 0),
-            k.scale(k.width() / 1024 * 0.7, k.height() / 576 * 0.7), // Zoom out more
-            k.z(-10) // Behind everything
-        ]);
+        // Add background with opacity
+        window.addLevelBackground(k, 0.8);
 
         // Title text
         k.add([
@@ -14,8 +9,8 @@ export function initTitle(k) {
                 size: 48,
                 font: 'monospace'
             }),
-            k.pos(k.width() / 2, 150),
             k.anchor('center'),
+            k.pos(k.width() / 2, 150),
             k.color(255, 255, 255)
         ]);
 
@@ -25,8 +20,8 @@ export function initTitle(k) {
                 size: 24,
                 font: 'monospace'
             }),
-            k.pos(k.width() / 2, 200),
             k.anchor('center'),
+            k.pos(k.width() / 2, 200),
             k.color(200, 200, 200)
         ]);
 
@@ -48,8 +43,8 @@ export function initTitle(k) {
                     size: 16,
                     font: 'monospace'
                 }),
-                k.pos(k.width() / 2, 280 + i * 25),
                 k.anchor('center'),
+                k.pos(k.width() / 2, 280 + i * 25),
                 k.color(255, 255, 255)
             ]);
         });
@@ -60,8 +55,8 @@ export function initTitle(k) {
                 size: 20,
                 font: 'monospace'
             }),
-            k.pos(k.width() / 2, 500),
             k.anchor('center'),
+            k.pos(k.width() / 2, 500),
             k.color(255, 215, 0)
         ]);
 
@@ -70,7 +65,7 @@ export function initTitle(k) {
             k.sprite('scouty'),
             k.pos(100, k.height() - 100),
             k.anchor('center'),
-            k.scale(0.2) // Smaller size for title screen
+            k.scale(0.4) // Reasonable size for title screen
         ]);
 
         // Simple animation

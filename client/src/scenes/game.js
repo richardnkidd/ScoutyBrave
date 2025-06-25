@@ -7,13 +7,8 @@ export function initGame(k) {
         // Reset game state
         window.resetGameState();
         
-        // Add background
-        const background = k.add([
-            k.sprite('cityscape_bg'),
-            k.pos(0, 0),
-            k.scale(k.width() / 1024 * 0.7, k.height() / 576 * 0.7), // Zoom out more
-            k.z(-10) // Behind everything
-        ]);
+        // Add background using helper
+        window.addLevelBackground(k);
         
         // Game variables
         let obstacleTimer = 0;
@@ -33,9 +28,9 @@ export function initGame(k) {
         // Create player
         const player = createPlayer(k);
         
-        // Add ground collision detection
-        player.onCollide('ground', () => {
-            console.log('Player collided with ground');
+        // Camera follows player horizontally, fixed vertically
+        k.onUpdate(() => {
+            k.camPos(player.pos.x, k.height() / 2); // Keep horizon level
         });
 
         // UI Elements

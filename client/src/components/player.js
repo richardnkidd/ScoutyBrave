@@ -2,10 +2,10 @@ export function createPlayer(k) {
     const player = k.add([
         k.sprite('scouty'),
         k.pos(100, k.height() - 100),
-        k.area(),
-        k.body(),
         k.anchor('center'),
-        k.scale(0.15), // Much smaller scale
+        k.scale(0.65), // ~20px tall
+        k.area({ scale: 0.65 }), // Hitbox matches sprite scale
+        k.body(),
         'player'
     ]);
 
@@ -40,13 +40,13 @@ export function createPlayer(k) {
             if (!isCowering) {
                 isCowering = true;
                 player.opacity = 0.7; // Darker when cowering
-                player.scaleTo(0.12); // Smaller when cowering (scaled from base 0.15)
+                player.scaleTo(0.5); // Smaller when cowering
             }
         } else {
             if (isCowering) {
                 isCowering = false;
                 player.opacity = 1;
-                player.scaleTo(0.15);
+                player.scaleTo(0.65);
             }
         }
 
@@ -66,13 +66,14 @@ export function createPlayer(k) {
         }
     });
 
-    // Jump
-    k.onKeyPress('space', () => {
-        console.log('Space pressed! isOnGround:', isOnGround, 'isCowering:', isCowering);
-        if (isOnGround && !isCowering) {
-            player.vel.y = -jumpForce; // Direct velocity assignment instead of jump()
-            isOnGround = false; // Set to false immediately after jump
-            console.log('Jump executed! Velocity set to:', -jumpForce);
+    // Jump with space or up arrow
+    k.onKeyPress(["space", "up"], () => {
+        if (player.isGrounded() && !isCowering) {
+            player.jump(jumpForce);
+            // Play jump sound if available
+            if (window.audioEnabled) {
+                k.play('hit', { volume: 0.2 }); // Use hit sound as jump "boop"
+            }
         }
     });
 

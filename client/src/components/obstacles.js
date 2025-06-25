@@ -4,35 +4,35 @@ export function spawnObstacle(k, gameSpeed) {
     const type = k.choose(obstacleTypes);
     let scale, yOffset;
     
+    const floorHeight = k.height() - 40;
+    
     // Different properties for each obstacle type
     switch (type) {
         case 'box':
-            scale = 0.6; // Make obstacles bigger and more visible
             yOffset = 0;
             break;
         case 'bag':
-            scale = 0.65;
             yOffset = 5;
             break;
         case 'leaf':
-            scale = 0.55;
             yOffset = -10;
             break;
     }
 
     const obstacle = k.add([
         k.sprite(type),
-        k.pos(k.width() + 50, k.height() - 60 - yOffset), // Move higher up from ground
+        k.pos(k.width() + 50, Math.max(floorHeight - 20, floorHeight - yOffset)), // No lower than floor - 20
         k.area(),
         k.move(k.LEFT, gameSpeed),
         k.anchor('center'),
-        k.scale(scale),
-        k.outline(2, k.rgb(255, 0, 0)), // Add red outline for visibility
+        k.scale(1), // Explicitly scale to 1 so never zero-sized
+        k.outline(2, k.rgb(0, 0, 0)), // Black outline for visibility
+        k.z(1), // Above background
         'obstacle',
         type
     ]);
     
-    console.log('Spawned obstacle:', type, 'at position:', obstacle.pos.x, obstacle.pos.y, 'scale:', scale);
+    console.log('Spawned obstacle:', type, 'at position:', obstacle.pos.x, obstacle.pos.y);
 
     // Add some variation to leaf movement
     if (type === 'leaf') {

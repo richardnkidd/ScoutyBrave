@@ -10,7 +10,8 @@ const k = kaboom({
     height: 600,
     background: [135, 206, 235], // Sky blue
     crisp: true,
-    pixelDensity: 1
+    pixelDensity: 1,
+    gravity: 1600 // Enable gravity for proper physics
 });
 
 // Global game state
@@ -44,6 +45,18 @@ initGameOver(k);
 
 // Start with title scene
 k.go('title');
+
+// Helper function to add background
+window.addLevelBackground = (k, opacity = 1) => {
+    return k.add([
+        k.sprite('cityscape_bg'),
+        k.pos(0, 0),
+        k.scale(k.width() / 1024, k.height() / 576), // Show entire background
+        k.opacity(opacity),
+        k.fixed(), // Don't scroll with camera
+        k.z(-2) // Behind everything
+    ]);
+};
 
 // Global utility functions
 window.resetGameState = () => {

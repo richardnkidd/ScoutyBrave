@@ -5,8 +5,9 @@ export function spawnHeart(k, gameSpeed) {
         k.area(),
         k.move(k.LEFT, gameSpeed * 0.8), // Hearts move slightly slower
         k.anchor('center'),
-        k.scale(0.5),
-        k.outline(2, k.rgb(255, 255, 255)), // Add white outline for visibility
+        k.scale(1), // Full scale
+        k.outline(2, k.rgb(0, 0, 0)), // Black outline for visibility
+        k.z(1), // Above background
         'heart'
     ]);
     
