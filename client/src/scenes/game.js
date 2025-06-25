@@ -15,14 +15,14 @@ export function initGame(k) {
         let heartTimer = 0;
         let gameSpeed = 100;
         
-        // FIX: Ground positioned to align with obstacle spawn
+        // FIX: ground collider matches grass band
         const ground = k.add([
             k.rect(k.width(), 40),
-            k.pos(0, k.height() - 40),
-            k.opacity(0), // Make invisible since background has ground
+            k.pos(0, k.height() - 100),   // <- was −40
             k.area(),
             k.body({ isStatic: true }),
-            'ground'
+            k.opacity(0),
+            'ground',
         ]);
 
         // Create player

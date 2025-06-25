@@ -1,11 +1,11 @@
 export function spawnHeart(k, gameSpeed) {
-    // FIX: Anchor hearts and spawn relative to camera
-    const groundY = k.height() - 40;
-    const heart = k.add([
+    const groundY = k.height() - 100;  // FIX
+    const heart   = k.add([
         k.sprite('heart'),
         k.anchor('botleft'),
-        // float between 40 px and 140 px above ground
-        k.pos(k.camPos().x + k.width() + 50, groundY - 40 - k.rand(0,100)),
+        // float 40-140 px above ground
+        k.pos(k.camPos().x + k.width() + 50,
+              groundY - 40 - k.rand(0, 100)),
         k.area(),
         k.scale(1),
         k.z(1),

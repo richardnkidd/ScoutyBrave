@@ -1,0 +1,109 @@
+### CONTEXT (Jun 25 2025)
+* Canvas: 800 × 600
+* Green grass band in cityscape_bg starts ≈ 100 px up from the bottom.
+* current ground collider: `k.rect(k.width(), 40)` at `y = k.height() − 40`.
+
+### FIXES WE NEED
+| Problem | Fix |
+|---------|-----|
+| Scout sprite far too large and anchored by top-left | Anchor by **botleft** and scale down to 0.35 (≈28 px tall). |
+| Ground collider sits 40 px from canvas bottom → grass band is ~60 px higher | Move ground & everything that “stands” on it to **groundY = k.height() − 100**. |
+| Obstacles/hearts spawn 40 px too low & vanish behind grass | Spawn at `groundY`. |
+| Hitbox wrong after scaling | Set `area({ scale: 0.35 })`. |
+
+### EDIT THESE FILES
+#### 1  `/components/player.js`
+```js
+export function createPlayer(k) {
+    const groundY = k.height() - 100;       // FIX: align with grass
+
+    const player = k.add([
+        k.sprite('scouty'),
+        k.anchor('botleft'),                // FIX: feet on ground
+        k.scale(0.35),                      // FIX: smaller
+        k.area({ scale: 0.35 }),            // FIX: matching hit-box
+        k.pos(100, groundY),
+        k.body(),
+        'player',
+    ]);
+
+    // JUMP (unchanged except sound id)
+    k.onKeyPress(['space', 'up'], () => {
+        if (player.isGrounded()) {
+            player.jump(420);
+            k.play('jump', { volume: 0.5 }).catch(() => {}); // safe play
+        }
+    });
+
+    // Horizontal movement (left / right) – leave as-is …
+    …
+    return player;
+}
+2 /components/obstacles.js
+js
+Copy
+Edit
+export function spawnObstacle(k, gameSpeed) {
+    const groundY = k.height() - 100;   // FIX: same baseline
+    const type     = k.choose(obstacleTypes);
+
+    return k.add([
+        k.sprite(type),
+        k.anchor('botleft'),
+        k.scale(1),
+        k.area(),
+        k.pos(k.camPos().x + k.width() + 80, groundY),
+        k.z(1),
+        k.outline(2, k.rgb(0,0,0)),
+        k.move(k.LEFT, gameSpeed),
+        'obstacle',
+    ]);
+}
+3 /components/pickups.js
+js
+Copy
+Edit
+export function spawnHeart(k, gameSpeed) {
+    const groundY = k.height() - 100;  // FIX
+    const heart   = k.add([
+        k.sprite('heart'),
+        k.anchor('botleft'),
+        // float 40-140 px above ground
+        k.pos(k.camPos().x + k.width() + 50,
+              groundY - 40 - k.rand(0, 100)),
+        k.area(),
+        k.scale(1),
+        k.z(1),
+        k.outline(2, k.rgb(0,0,0)),
+        k.move(k.LEFT, gameSpeed * 0.8),
+        'heart',
+    ]);
+
+    // fancy bob animation (keep)
+    …
+    return heart;
+}
+4 /scenes/game.js
+js
+Copy
+Edit
+// FIX: ground collider matches grass band
+const ground = k.add([
+    k.rect(k.width(), 40),
+    k.pos(0, k.height() - 100),   // <- was −40
+    k.area(),
+    k.body({ isStatic: true }),
+    k.opacity(0),
+    'ground',
+]);
+ACCEPTANCE
+Scouty ~28 px tall, feet flush with grass.
+
+Obstacles visibly slide across grass band.
+
+Hearts float above Scouty’s head.
+
+Collisions & jump still work.
+
+DELIVERABLE
+Updated 4 files with // FIX: comments.

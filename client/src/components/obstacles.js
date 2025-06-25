@@ -1,33 +1,15 @@
 const obstacleTypes = ['box', 'bag', 'leaf'];
 
 export function spawnObstacle(k, gameSpeed) {
-    const type = k.choose(obstacleTypes);
-    let scale, yOffset;
-    
-    const floorHeight = k.height() - 40;
-    
-    // Different properties for each obstacle type
-    switch (type) {
-        case 'box':
-            yOffset = 0;
-            break;
-        case 'bag':
-            yOffset = 5;
-            break;
-        case 'leaf':
-            yOffset = -10;
-            break;
-    }
+    const groundY = k.height() - 100;   // FIX: same baseline
+    const type     = k.choose(obstacleTypes);
 
-    // FIX: Anchor obstacles to ground and spawn relative to camera
-    const groundY = k.height() - 40;
-    
     const obstacle = k.add([
         k.sprite(type),
-        k.anchor('botleft'),                       // feet on ground
-        k.pos(k.camPos().x + k.width() + 100, groundY), // spawn just off-screen right
+        k.anchor('botleft'),
         k.scale(1),
         k.area(),
+        k.pos(k.camPos().x + k.width() + 80, groundY),
         k.z(1),
         k.outline(2, k.rgb(0,0,0)),
         k.move(k.LEFT, gameSpeed),

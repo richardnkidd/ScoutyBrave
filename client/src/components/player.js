@@ -1,16 +1,13 @@
 export function createPlayer(k) {
-    const groundY = k.height() - 40;          // same y the ground collider sits on
+    const groundY = k.height() - 100;       // FIX: align with grass
 
     const player = k.add([
         k.sprite('scouty'),
-
-        // ANCHOR AND SCALE ARE THE TWO LINES THAT MATTER
-        k.anchor('botleft'),                  // "feet" touch groundY
-        k.scale(0.50),                        // dial this number smaller or larger
-
-        k.area({ scale: 0.50 }),              // hit-box matches new scale
+        k.anchor('botleft'),                // FIX: feet on ground
+        k.scale(0.35),                      // FIX: smaller
+        k.area({ scale: 0.35 }),            // FIX: matching hit-box
+        k.pos(100, groundY),
         k.body(),
-        k.pos(100, groundY),                  // stand on the ground
         'player',
     ]);
 
@@ -35,14 +32,14 @@ export function createPlayer(k) {
             if (!isCowering) {
                 isCowering = true;
                 player.opacity = 0.7; // Darker when cowering
-                player.scale = k.vec2(0.4, 0.4); // Smaller when cowering
+                player.scale = k.vec2(0.25, 0.25); // Smaller when cowering
                 player.angle = 10; // Slight tilt when cowering
             }
         } else {
             if (isCowering) {
                 isCowering = false;
                 player.opacity = 1;
-                player.scale = k.vec2(0.50, 0.50);
+                player.scale = k.vec2(0.35, 0.35);
                 player.angle = 0;
             }
         }
@@ -63,12 +60,14 @@ export function createPlayer(k) {
         }
     });
 
-    // FIX: Jump control with proper sound
+    // JUMP (unchanged except sound id)
     k.onKeyPress(['space', 'up'], () => {
         if (player.isGrounded()) {
-            player.jump(420);   // tweak force if necessary
-            if (window.audioEnabled) {
-                k.play('hit', { volume: 0.4 }); // Use hit sound as jump "boop"
+            player.jump(420);
+            try {
+                k.play('hit', { volume: 0.5 }); // safe play
+            } catch (e) {
+                // Sound may not be loaded yet
             }
         }
     });
