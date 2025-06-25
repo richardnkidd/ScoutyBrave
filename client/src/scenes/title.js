@@ -62,7 +62,7 @@ export function initTitle(k) {
             k.sprite('scouty'),
             k.pos(100, k.height() - 100),
             k.anchor('center'),
-            k.scale(1.5) // Moderately sized for title screen
+            k.scale(0.5) // Much smaller for title screen
         ]);
 
         // Simple animation

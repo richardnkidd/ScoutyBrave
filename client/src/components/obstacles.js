@@ -7,15 +7,15 @@ export function spawnObstacle(k, gameSpeed) {
     // Different properties for each obstacle type
     switch (type) {
         case 'box':
-            scale = 2;
+            scale = 0.8;
             yOffset = 0;
             break;
         case 'bag':
-            scale = 2.2;
+            scale = 0.9;
             yOffset = 5;
             break;
         case 'leaf':
-            scale = 1.8;
+            scale = 0.7;
             yOffset = -10;
             break;
     }
