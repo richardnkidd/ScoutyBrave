@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scouty the Brave</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #2c3e50;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Courier New', monospace;
+        }
+        
+        canvas {
+            border: 2px solid #34495e;
+            background: #87CEEB;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+        
+        #gameContainer {
+            text-align: center;
+        }
+        
+        .instructions {
+            color: white;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+        <div class="instructions">
+            Arrow Keys: Move | Space: Jump | Down: Cower
+        </div>
+    </div>
+    
+    <!-- Kaboom.js from CDN -->
+    <script src="https://unpkg.com/kaboom@3000/dist/kaboom.js"></script>
+    
+    <!-- Game scripts -->
+    <script type="module" src="/src/game.js"></script>
+</body>
+</html>

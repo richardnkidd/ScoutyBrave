@@ -1,0 +1,78 @@
+export function initTitle(k) {
+    k.scene('title', () => {
+        // Title text
+        k.add([
+            k.text('SCOUTY THE BRAVE', {
+                size: 48,
+                font: 'monospace'
+            }),
+            k.pos(k.width() / 2, 150),
+            k.anchor('center'),
+            k.color(255, 255, 255)
+        ]);
+
+        // Subtitle
+        k.add([
+            k.text('A Pixel Adventure', {
+                size: 24,
+                font: 'monospace'
+            }),
+            k.pos(k.width() / 2, 200),
+            k.anchor('center'),
+            k.color(200, 200, 200)
+        ]);
+
+        // Instructions
+        const instructions = [
+            'Arrow Keys: Move Left/Right',
+            'Space: Jump',
+            'Down Arrow: Cower',
+            '',
+            'Avoid obstacles to keep fear low!',
+            'Collect hearts to reduce fear!',
+            '',
+            'Press SPACE to start'
+        ];
+
+        instructions.forEach((line, i) => {
+            k.add([
+                k.text(line, {
+                    size: 16,
+                    font: 'monospace'
+                }),
+                k.pos(k.width() / 2, 280 + i * 25),
+                k.anchor('center'),
+                k.color(255, 255, 255)
+            ]);
+        });
+
+        // High score
+        k.add([
+            k.text(`High Score: ${window.gameState.highScore}`, {
+                size: 20,
+                font: 'monospace'
+            }),
+            k.pos(k.width() / 2, 500),
+            k.anchor('center'),
+            k.color(255, 215, 0)
+        ]);
+
+        // Simple animated Scouty sprite
+        const scouty = k.add([
+            k.rect(32, 32),
+            k.color(255, 255, 255),
+            k.pos(100, k.height() - 100),
+            k.anchor('center')
+        ]);
+
+        // Simple animation
+        scouty.onUpdate(() => {
+            scouty.pos.y = k.height() - 100 + Math.sin(k.time() * 3) * 10;
+        });
+
+        // Start game on space press
+        k.onKeyPress('space', () => {
+            k.go('game');
+        });
+    });
+}
