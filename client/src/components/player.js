@@ -53,7 +53,7 @@ export function createPlayer(k) {
         }
 
         // Simple walking animation
-        if ((k.isKeyDown('left') || k.isKeyDown('right')) && isOnGround && !isCowering) {
+        if ((k.isKeyDown('left') || k.isKeyDown('right')) && player.isGrounded() && !isCowering) {
             player.angle = Math.sin(k.time() * 10) * 2;
         } else {
             player.angle = 0;
