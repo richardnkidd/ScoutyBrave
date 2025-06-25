@@ -1,31 +1,23 @@
 export function createPlayer(k) {
-    // FIX: Proper player setup with correct positioning and scale
+    // FIX: place Scouty on the ground & anchor by feet
+    const groundY = k.height() - 40;              // 40-px ground collider
     const player = k.add([
         k.sprite('scouty'),
-        k.pos(100, k.height() - 160),
+        k.anchor('botleft'),                       // bottom-left corner = feet
+        k.pos(100, groundY),                       // stand on ground
         k.scale(0.65),
         k.area({ scale: 0.65 }),
         k.body(),
-        'player'
+        'player',
     ]);
 
     // Player state
-    let isOnGround = true; // Start on ground
     let isCowering = false;
     let moveSpeed = 200;
     let jumpForce = 400;
 
-    // Ground collision detection
-    player.onCollide('ground', () => {
-        isOnGround = true;
-    });
-
     // Movement
     k.onUpdate(() => {
-        // Check velocity to determine if falling/jumping
-        if (player.vel.y > 50) {
-            isOnGround = false;
-        }
 
         // Horizontal movement
         if (k.isKeyDown('left') && !isCowering) {

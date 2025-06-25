@@ -19,17 +19,19 @@ export function spawnObstacle(k, gameSpeed) {
             break;
     }
 
-    // FIX: Proper obstacle setup with correct positioning and visibility
+    // FIX: Anchor obstacles to ground and spawn relative to camera
+    const groundY = k.height() - 40;
+    
     const obstacle = k.add([
         k.sprite(type),
-        k.scale(1),            // ensure visible
+        k.anchor('botleft'),                       // feet on ground
+        k.pos(k.camPos().x + k.width() + 100, groundY), // spawn just off-screen right
+        k.scale(1),
         k.area(),
-        k.body(),
-        k.pos(k.width() + 100, k.height() - 60),
         k.z(1),
-        k.outline(2, k.rgb(0,0,0)),  // visibility
+        k.outline(2, k.rgb(0,0,0)),
         k.move(k.LEFT, gameSpeed),
-        'obstacle'
+        'obstacle',
     ]);
     
     console.log('Spawned obstacle:', type, 'at position:', obstacle.pos.x, obstacle.pos.y);
