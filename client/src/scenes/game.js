@@ -28,9 +28,12 @@ export function initGame(k) {
         // Create player
         const player = createPlayer(k);
         
-        // Camera follows player horizontally, fixed vertically  
+        // FIX: camera only starts following when Scouty passes mid-screen
         k.onUpdate(() => {
-            k.camPos(player.pos.x + 200, k.height() / 2); // +200 keeps her nearer left edge
+            const screenMidX = k.camPos().x;
+            if (player.pos.x > screenMidX) {
+                k.camPos(player.pos.x, k.height() / 2);
+            }
         });
 
         // UI Elements

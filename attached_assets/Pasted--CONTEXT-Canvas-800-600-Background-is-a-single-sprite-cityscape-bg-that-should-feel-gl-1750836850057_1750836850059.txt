@@ -1,0 +1,103 @@
+### CONTEXT
+* Canvas 800 × 600.
+* Background is a single sprite (`cityscape_bg`) that should feel glued to the camera.
+* Camera is set every frame: `k.camPos(player.pos.x, k.height()/2)`.
+* Obstacles spawn with `k.pos(k.camPos().x + k.width() + 80, groundY)`, but never show.
+
+### ROOT CAUSES
+1. **Background moves** because it’s bigger than the canvas; even with `fixed()`, you’re seeing its *edges* as the camera pans.  
+2. **Obstacles invisible** because the player never actually walks forward (unless you press ←/→), so `k.camPos()` never advances ⇒ they’re spawned far off-screen and stay there.
+
+### CODE CHANGES
+#### 1  `/main.js` – perfectly lock background to camera
+```js
+// FIX: make bg width = canvas so edges never scroll into view
+function addLevelBackground(k, opacity = 1) {
+    const bg = k.add([
+        k.rect(k.width(), k.height(), { radius: 0 }), // placeholder rect
+        k.pos(0, 0),
+        k.color(0,0,0,0),  // transparent
+        k.fixed(),
+        k.z(-3),
+    ]);
+
+    bg.use(k.sprite('cityscape_bg'));
+    bg.use(k.fixed());
+    bg.use(k.opacity(opacity));
+
+    // scale to fill *exactly* the canvas
+    bg.onLoad(() => {
+        bg.scale = k.vec2(
+            k.width()  / bg.width,
+            k.height() / bg.height,
+        );
+    });
+    return bg;
+}
+2 /components/player.js – auto-run forward (so obstacles enter view)
+js
+Copy
+Edit
+export function createPlayer(k) {
+    const groundY = k.height() - 100;
+    const runSpeed = 120;        // constant scroll speed
+
+    const player = k.add([
+        k.sprite('scouty'),
+        k.anchor('botleft'),
+        k.scale(0.35),
+        k.area({ scale: 0.35 }),
+        k.pos(50, groundY),
+        k.body(),
+        'player',
+    ]);
+
+    // FIX: constant forward motion unless cowering
+    k.onUpdate(() => {
+        if (!k.isKeyDown('down')) {
+            player.move(runSpeed, 0);
+        }
+    });
+
+    …
+    return player;
+}
+3 /components/obstacles.js – spawn at fixed offset from player, not camPos
+js
+Copy
+Edit
+export function spawnObstacle(k, gameSpeed) {
+    const groundY = k.height() - 100;
+    const player  = k.get('player')[0];
+
+    return k.add([
+        k.sprite(k.choose(obstacleTypes)),
+        k.anchor('botleft'),
+        k.scale(1),
+        k.area(),
+        // FIX: spawn relative to player so they always enter view
+        k.pos(player.pos.x + k.width() + 400, groundY),
+        k.z(1),
+        k.outline(2, k.rgb(0,0,0)),
+        k.move(k.LEFT, gameSpeed),
+        'obstacle',
+    ]);
+}
+4 /scenes/game.js – camera only starts following when Scouty passes mid-screen
+js
+Copy
+Edit
+// inside onUpdate()
+const screenMidX = k.camPos().x;
+if (player.pos.x > screenMidX) {
+    k.camPos(player.pos.x, k.height() / 2);
+}
+ACCEPTANCE
+Background feels fixed; no parallax edge creep.
+
+Scouty auto-walks; when you press ← she slows, → speeds up.
+
+Obstacles scroll in from the right within 1–2 s of game start.
+
+DELIVERABLES
+Updated helper in /main.js, new logic in player.js, obstacles.js, and camera tweak in game.js – each tagged // FIX:.

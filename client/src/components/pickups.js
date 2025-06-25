@@ -4,7 +4,7 @@ export function spawnHeart(k, gameSpeed) {
         k.sprite('heart'),
         k.anchor('botleft'),
         // float 40-140 px above ground
-        k.pos(k.camPos().x + k.width() + 50,
+        k.pos(k.get('player')[0].pos.x + k.width() + 400,
               groundY - 40 - k.rand(0, 100)),
         k.area(),
         k.scale(1),

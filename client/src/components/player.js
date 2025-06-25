@@ -1,12 +1,13 @@
 export function createPlayer(k) {
-    const groundY = k.height() - 100;       // FIX: align with grass
+    const groundY = k.height() - 100;
+    const runSpeed = 120;        // constant scroll speed
 
     const player = k.add([
         k.sprite('scouty'),
-        k.anchor('botleft'),                // FIX: feet on ground
-        k.scale(0.35),                      // FIX: smaller
-        k.area({ scale: 0.35 }),            // FIX: matching hit-box
-        k.pos(100, groundY),
+        k.anchor('botleft'),
+        k.scale(0.35),
+        k.area({ scale: 0.35 }),
+        k.pos(50, groundY),
         k.body(),
         'player',
     ]);
@@ -16,10 +17,16 @@ export function createPlayer(k) {
     let moveSpeed = 200;
     let jumpForce = 400;
 
-    // Movement
+    // FIX: constant forward motion unless cowering
     k.onUpdate(() => {
+        if (!k.isKeyDown('down')) {
+            player.move(runSpeed, 0);
+        }
+    });
 
-        // Horizontal movement
+    // Additional movement controls
+    k.onUpdate(() => {
+        // Horizontal movement (modifies auto-run speed)
         if (k.isKeyDown('left') && !isCowering) {
             player.move(-moveSpeed, 0);
         }

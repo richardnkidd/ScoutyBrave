@@ -1,15 +1,16 @@
 const obstacleTypes = ['box', 'bag', 'leaf'];
 
 export function spawnObstacle(k, gameSpeed) {
-    const groundY = k.height() - 100;   // FIX: same baseline
-    const type     = k.choose(obstacleTypes);
+    const groundY = k.height() - 100;
+    const player  = k.get('player')[0];
 
     const obstacle = k.add([
-        k.sprite(type),
+        k.sprite(k.choose(obstacleTypes)),
         k.anchor('botleft'),
         k.scale(1),
         k.area(),
-        k.pos(k.camPos().x + k.width() + 80, groundY),
+        // FIX: spawn relative to player so they always enter view
+        k.pos(player.pos.x + k.width() + 400, groundY),
         k.z(1),
         k.outline(2, k.rgb(0,0,0)),
         k.move(k.LEFT, gameSpeed),
