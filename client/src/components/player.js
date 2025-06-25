@@ -1,10 +1,10 @@
 export function createPlayer(k) {
+    // FIX: Proper player setup with correct positioning and scale
     const player = k.add([
         k.sprite('scouty'),
-        k.pos(100, k.height() - 100),
-        k.anchor('center'),
-        k.scale(0.65), // ~20px tall
-        k.area({ scale: 0.65 }), // Hitbox matches sprite scale
+        k.pos(100, k.height() - 160),
+        k.scale(0.65),
+        k.area({ scale: 0.65 }),
         k.body(),
         'player'
     ]);
@@ -66,13 +66,12 @@ export function createPlayer(k) {
         }
     });
 
-    // Jump with space or up arrow
-    k.onKeyPress(["space", "up"], () => {
-        if (player.isGrounded() && !isCowering) {
-            player.jump(jumpForce);
-            // Play jump sound if available
+    // FIX: Jump control with proper sound
+    k.onKeyPress(['space', 'up'], () => {
+        if (player.isGrounded()) {
+            player.jump(420);   // tweak force if necessary
             if (window.audioEnabled) {
-                k.play('hit', { volume: 0.2 }); // Use hit sound as jump "boop"
+                k.play('hit', { volume: 0.4 }); // Use hit sound as jump "boop"
             }
         }
     });

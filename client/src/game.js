@@ -46,16 +46,28 @@ initGameOver(k);
 // Start with title scene
 k.go('title');
 
-// Helper function to add background
+// FIX: Helper function to add background with proper scaling
 window.addLevelBackground = (k, opacity = 1) => {
-    return k.add([
+    const bg = k.add([
         k.sprite('cityscape_bg'),
         k.pos(0, 0),
-        k.scale(k.width() / 1024, k.height() / 576), // Show entire background
-        k.opacity(opacity),
-        k.fixed(), // Don't scroll with camera
-        k.z(-2) // Behind everything
+        k.fixed(),
+        k.z(-2),
+        k.opacity(opacity)
     ]);
+    
+    // Wait one frame for sprite to load, then scale appropriately
+    k.wait(0.01, () => {
+        if (bg.width && bg.height) {
+            const sx = k.width() / bg.width;
+            const sy = k.height() / bg.height;
+            // choose the smaller factor so whole image fits
+            const factor = Math.min(sx, sy);
+            bg.scale = k.vec2(factor, factor);
+        }
+    });
+    
+    return bg;
 };
 
 // Global utility functions

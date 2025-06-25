@@ -1,0 +1,111 @@
+### WHAT’S BROKEN / DESIRED CHANGES
+1. **Background is zoomed in** because `addLevelBackground()` blindly scales to 1024×576.  
+   *We need to scale so the *whole* 1152×768 image fits the canvas (800×600) without cropping.*
+2. **Title scene should share the background** but keep 80 % opacity.
+3. **Scouty sprite is too large** in the Game scene.
+4. **Space-bar jump doesn’t fire**.
+5. **Obstacles are invisible / behind the BG or off-screen.**
+
+### MODIFY THE CODE AS FOLLOWS
+#### 1  `/main.js`
+* **Rewrite `addLevelBackground(k, opacity = 1)`** so it:
+  ```js
+  function addLevelBackground(k, opacity = 1) {
+      const bg = k.add([
+          k.sprite('cityscape_bg'),
+          k.pos(0, 0),
+          k.fixed(),
+          k.z(-2),
+          k.opacity(opacity)
+      ]);
+      // scale AFTER sprite loads so we can read its size
+      bg.onLoad(() => {
+          const sx = k.width()  / bg.width;
+          const sy = k.height() / bg.height;
+          // choose the smaller factor so whole image fits
+          const factor = Math.min(sx, sy);
+          bg.scale = k.vec2(factor, factor);
+      });
+      return bg;
+  }
+Replace the old helper with the one above (keep same name so calls in scenes don’t change).
+
+Remove any hard-coded k.scale(k.width()/1024 …) lines.
+
+2 /components/player.js
+In createPlayer(k):
+
+Change initial scale to 0.65 and shrink the hitbox:
+
+js
+Copy
+Edit
+const player = k.add([
+    k.sprite('scouty'),
+    k.pos(100, k.height() - 160),
+    k.scale(0.65),
+    k.area({ scale: 0.65 }),
+    k.body(),
+    'player'
+]);
+Jump control:
+
+js
+Copy
+Edit
+k.onKeyPress(['space', 'up'], () => {
+    if (player.isGrounded()) {
+        player.jump(420);   // tweak force if necessary
+        k.play('jump', { volume: 0.4 });
+    }
+});
+3 /scenes/title.js
+Delete the existing manual opacity background logic and simply call:
+
+js
+Copy
+Edit
+addLevelBackground(k, 0.8);
+No other title changes needed.
+
+4 /components/obstacles.js
+In both spawnObstacle and any prefab helper:
+
+js
+Copy
+Edit
+return k.add([
+    k.sprite(kind),        // box / bag / leaf
+    k.scale(1),            // ensure visible
+    k.area(),
+    k.body(),
+    k.pos(player.pos.x + k.width() + 100, k.height() - 60),
+    k.z(1),
+    k.outline(2, k.rgb(0,0,0)),  // visibility
+    'obstacle'
+]);
+Verify update loop moves them with speed -gameSpeed and destroys off-screen ones.
+
+5 /scenes/game.js
+Remove any camScale() calls (none exist now, but double-check).
+
+Ensure the ground’s y-pos lines up with obstacle spawn (k.height() - 40).
+
+Call addLevelBackground(k); exactly once at scene start.
+
+DELIVERABLES
+Updated /main.js, /components/player.js, /components/obstacles.js, and /scenes/title.js.
+
+Mark each inserted/edited block with // FIX: in the diff.
+
+No other files need touching.
+
+ACCEPTANCE CHECKS
+Item	Pass criterion
+Background	Entire skyline visible in both Title & Game scenes with no cropping.
+Scout size	~20 px tall and collides correctly.
+Jump	Pressing Space or Up while grounded makes Scout leap.
+Obstacles	Visible (outline + correct z), spawn at ground level, scroll left.
+
+AFTER COMPLETION
+Run the game to verify all acceptance checks pass. Report any remaining issues

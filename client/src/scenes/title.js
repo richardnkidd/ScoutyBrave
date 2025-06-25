@@ -1,6 +1,6 @@
 export function initTitle(k) {
     k.scene('title', () => {
-        // Add background with opacity
+        // FIX: Use helper for background with 80% opacity
         window.addLevelBackground(k, 0.8);
 
         // Title text

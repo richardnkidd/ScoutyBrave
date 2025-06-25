@@ -7,7 +7,7 @@ export function initGame(k) {
         // Reset game state
         window.resetGameState();
         
-        // Add background using helper
+        // FIX: Add background using fixed helper
         window.addLevelBackground(k);
         
         // Game variables
@@ -15,7 +15,7 @@ export function initGame(k) {
         let heartTimer = 0;
         let gameSpeed = 100;
         
-        // Create invisible ground for physics
+        // FIX: Ground positioned to align with obstacle spawn
         const ground = k.add([
             k.rect(k.width(), 40),
             k.pos(0, k.height() - 40),
