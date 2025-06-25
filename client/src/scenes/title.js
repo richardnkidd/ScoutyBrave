@@ -1,5 +1,13 @@
 export function initTitle(k) {
     k.scene('title', () => {
+        // Add background
+        const background = k.add([
+            k.sprite('cityscape_bg'),
+            k.pos(0, 0),
+            k.scale(k.width() / 1024 * 0.7, k.height() / 576 * 0.7), // Zoom out more
+            k.z(-10) // Behind everything
+        ]);
+
         // Title text
         k.add([
             k.text('SCOUTY THE BRAVE', {
@@ -62,7 +70,7 @@ export function initTitle(k) {
             k.sprite('scouty'),
             k.pos(100, k.height() - 100),
             k.anchor('center'),
-            k.scale(0.25) // Reasonable size for title screen
+            k.scale(0.2) // Smaller size for title screen
         ]);
 
         // Simple animation

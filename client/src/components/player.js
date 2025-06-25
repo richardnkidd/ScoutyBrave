@@ -5,7 +5,7 @@ export function createPlayer(k) {
         k.area(),
         k.body(),
         k.anchor('center'),
-        k.scale(0.3), // Scale up the pixel art for better visibility
+        k.scale(0.15), // Much smaller scale
         'player'
     ]);
 
@@ -40,13 +40,13 @@ export function createPlayer(k) {
             if (!isCowering) {
                 isCowering = true;
                 player.opacity = 0.7; // Darker when cowering
-                player.scaleTo(0.25); // Smaller when cowering (scaled from base 0.3)
+                player.scaleTo(0.12); // Smaller when cowering (scaled from base 0.15)
             }
         } else {
             if (isCowering) {
                 isCowering = false;
                 player.opacity = 1;
-                player.scaleTo(0.3);
+                player.scaleTo(0.15);
             }
         }
 

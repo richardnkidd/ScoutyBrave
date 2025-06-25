@@ -11,7 +11,7 @@ export function initGame(k) {
         const background = k.add([
             k.sprite('cityscape_bg'),
             k.pos(0, 0),
-            k.scale(k.width() / 1024, k.height() / 576), // Scale to fit canvas
+            k.scale(k.width() / 1024 * 0.7, k.height() / 576 * 0.7), // Zoom out more
             k.z(-10) // Behind everything
         ]);
         
