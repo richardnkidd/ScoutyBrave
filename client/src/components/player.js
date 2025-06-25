@@ -32,13 +32,15 @@ export function createPlayer(k) {
             if (!isCowering) {
                 isCowering = true;
                 player.opacity = 0.7; // Darker when cowering
-                player.scaleTo(0.5); // Smaller when cowering
+                player.scale = k.vec2(0.5, 0.5); // Smaller when cowering
+                player.angle = 10; // Slight tilt when cowering
             }
         } else {
             if (isCowering) {
                 isCowering = false;
                 player.opacity = 1;
-                player.scaleTo(0.65);
+                player.scale = k.vec2(0.65, 0.65);
+                player.angle = 0;
             }
         }
 
