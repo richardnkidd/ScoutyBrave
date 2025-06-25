@@ -59,10 +59,10 @@ export function initTitle(k) {
 
         // Simple animated Scouty sprite
         const scouty = k.add([
-            k.rect(32, 32),
-            k.color(255, 255, 255),
+            k.sprite('scouty'),
             k.pos(100, k.height() - 100),
-            k.anchor('center')
+            k.anchor('center'),
+            k.scale(3) // Larger for title screen
         ]);
 
         // Simple animation

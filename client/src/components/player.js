@@ -1,11 +1,11 @@
 export function createPlayer(k) {
     const player = k.add([
-        k.rect(32, 32),
+        k.sprite('scouty'),
         k.pos(100, k.height() - 100),
-        k.color(255, 255, 255),
         k.area(),
         k.body(),
         k.anchor('center'),
+        k.scale(2), // Scale up the pixel art for better visibility
         'player'
     ]);
 
@@ -32,14 +32,14 @@ export function createPlayer(k) {
         if (k.isKeyDown('down')) {
             if (!isCowering) {
                 isCowering = true;
-                player.color = k.rgb(180, 180, 180); // Darker when cowering
-                player.scaleTo(0.8); // Smaller when cowering
+                player.opacity = 0.7; // Darker when cowering
+                player.scaleTo(1.6); // Smaller when cowering (scaled from base 2)
             }
         } else {
             if (isCowering) {
                 isCowering = false;
-                player.color = k.rgb(255, 255, 255);
-                player.scaleTo(1);
+                player.opacity = 1;
+                player.scaleTo(2);
             }
         }
 

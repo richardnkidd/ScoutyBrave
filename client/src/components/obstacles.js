@@ -2,31 +2,31 @@ const obstacleTypes = ['box', 'bag', 'leaf'];
 
 export function spawnObstacle(k, gameSpeed) {
     const type = k.choose(obstacleTypes);
-    let color, size;
+    let scale, yOffset;
     
     // Different properties for each obstacle type
     switch (type) {
         case 'box':
-            color = k.rgb(139, 69, 19); // Brown
-            size = { width: 30, height: 30 };
+            scale = 2;
+            yOffset = 0;
             break;
         case 'bag':
-            color = k.rgb(50, 50, 50); // Dark gray
-            size = { width: 25, height: 35 };
+            scale = 2.2;
+            yOffset = 5;
             break;
         case 'leaf':
-            color = k.rgb(34, 139, 34); // Green
-            size = { width: 20, height: 15 };
+            scale = 1.8;
+            yOffset = -10;
             break;
     }
 
     const obstacle = k.add([
-        k.rect(size.width, size.height),
-        k.pos(k.width() + 50, k.height() - 40 - size.height),
-        k.color(color),
+        k.sprite(type),
+        k.pos(k.width() + 50, k.height() - 40 - yOffset),
         k.area(),
         k.move(k.LEFT, gameSpeed),
         k.anchor('center'),
+        k.scale(scale),
         'obstacle',
         type
     ]);

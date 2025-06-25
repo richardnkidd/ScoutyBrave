@@ -1,11 +1,11 @@
 export function spawnHeart(k, gameSpeed) {
     const heart = k.add([
-        k.rect(20, 20),
+        k.sprite('heart'),
         k.pos(k.width() + 50, k.height() - 60 - k.rand(0, 100)),
-        k.color(255, 20, 147), // Pink/red heart color
         k.area(),
         k.move(k.LEFT, gameSpeed * 0.8), // Hearts move slightly slower
         k.anchor('center'),
+        k.scale(2),
         'heart'
     ]);
 
