@@ -5,7 +5,7 @@ export function createPlayer(k) {
         k.area(),
         k.body(),
         k.anchor('center'),
-        k.scale(0.2), // Scale up the pixel art for better visibility
+        k.scale(0.5), // Scale up the pixel art for better visibility
         'player'
     ]);
 
@@ -17,7 +17,7 @@ export function createPlayer(k) {
 
     // Movement
     k.onUpdate(() => {
-        // Check if on ground
+        // Check if on ground - using collision with ground tag
         isOnGround = player.isGrounded();
 
         // Horizontal movement
@@ -33,13 +33,13 @@ export function createPlayer(k) {
             if (!isCowering) {
                 isCowering = true;
                 player.opacity = 0.7; // Darker when cowering
-                player.scaleTo(0.15); // Smaller when cowering (scaled from base 0.2)
+                player.scaleTo(0.4); // Smaller when cowering (scaled from base 0.5)
             }
         } else {
             if (isCowering) {
                 isCowering = false;
                 player.opacity = 1;
-                player.scaleTo(0.2);
+                player.scaleTo(0.5);
             }
         }
 
@@ -61,8 +61,10 @@ export function createPlayer(k) {
 
     // Jump
     k.onKeyPress('space', () => {
+        console.log('Space pressed! isOnGround:', isOnGround, 'isCowering:', isCowering);
         if (isOnGround && !isCowering) {
             player.jump(jumpForce);
+            console.log('Jump executed!');
         }
     });
 

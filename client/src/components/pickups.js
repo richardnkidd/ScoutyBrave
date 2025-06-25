@@ -5,7 +5,7 @@ export function spawnHeart(k, gameSpeed) {
         k.area(),
         k.move(k.LEFT, gameSpeed * 0.8), // Hearts move slightly slower
         k.anchor('center'),
-        k.scale(0.2),
+        k.scale(0.5),
         'heart'
     ]);
 

@@ -24,6 +24,11 @@ export function initGame(k) {
 
         // Create player
         const player = createPlayer(k);
+        
+        // Add ground collision detection
+        player.onCollide('ground', () => {
+            console.log('Player collided with ground');
+        });
 
         // UI Elements
         const fearBar = k.add([
