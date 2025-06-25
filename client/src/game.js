@@ -22,7 +22,7 @@ window.gameState = {
     highScore: localStorage.getItem('scoutyHighScore') || 0
 };
 
-// Load sprites - using simple colored rectangles as pixel art
+// Load sprites - using pixel art
 k.loadSprite('scouty', '/sprites/scouty.png');
 k.loadSprite('box', '/sprites/box.png');
 k.loadSprite('bag', '/sprites/bag.png');
