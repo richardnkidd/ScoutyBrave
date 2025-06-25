@@ -1,13 +1,16 @@
 export function createPlayer(k) {
-    // FIX: place Scouty on the ground & anchor by feet
-    const groundY = k.height() - 40;              // 40-px ground collider
+    const groundY = k.height() - 40;          // same y the ground collider sits on
+
     const player = k.add([
         k.sprite('scouty'),
-        k.anchor('botleft'),                       // bottom-left corner = feet
-        k.pos(100, groundY),                       // stand on ground
-        k.scale(0.65),
-        k.area({ scale: 0.65 }),
+
+        // ANCHOR AND SCALE ARE THE TWO LINES THAT MATTER
+        k.anchor('botleft'),                  // "feet" touch groundY
+        k.scale(0.50),                        // dial this number smaller or larger
+
+        k.area({ scale: 0.50 }),              // hit-box matches new scale
         k.body(),
+        k.pos(100, groundY),                  // stand on the ground
         'player',
     ]);
 
@@ -32,14 +35,14 @@ export function createPlayer(k) {
             if (!isCowering) {
                 isCowering = true;
                 player.opacity = 0.7; // Darker when cowering
-                player.scale = k.vec2(0.5, 0.5); // Smaller when cowering
+                player.scale = k.vec2(0.4, 0.4); // Smaller when cowering
                 player.angle = 10; // Slight tilt when cowering
             }
         } else {
             if (isCowering) {
                 isCowering = false;
                 player.opacity = 1;
-                player.scale = k.vec2(0.65, 0.65);
+                player.scale = k.vec2(0.50, 0.50);
                 player.angle = 0;
             }
         }

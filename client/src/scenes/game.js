@@ -28,9 +28,9 @@ export function initGame(k) {
         // Create player
         const player = createPlayer(k);
         
-        // Camera follows player horizontally, fixed vertically
+        // Camera follows player horizontally, fixed vertically  
         k.onUpdate(() => {
-            k.camPos(player.pos.x, k.height() / 2); // Keep horizon level
+            k.camPos(player.pos.x + 200, k.height() / 2); // +200 keeps her nearer left edge
         });
 
         // UI Elements
