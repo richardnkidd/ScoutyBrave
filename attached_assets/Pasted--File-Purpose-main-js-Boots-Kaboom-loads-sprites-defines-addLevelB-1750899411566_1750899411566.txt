@@ -1,0 +1,165 @@
+| File | Purpose |
+|------|---------|
+| `/main.js` | Boots Kaboom, loads sprites, defines `addLevelBackground()`, registers scenes. |
+| `/scenes/game.js` | Core game loop, spawns obstacles / hearts. |
+| `/components/player.js` | `createPlayer(k)` – sets up Scouty + controls. |
+| `/components/obstacles.js` | `spawnObstacle(k, speed)` + `updateObstacles(k)`. |
+| `/components/pickups.js` | Hearts logic. |
+| Canvas | 800 × 600. Green grass strip starts ≈ 100 px above canvas bottom. |
+| Ground collider | Currently at `y = k.height() - 40` (too low). |
+
+### WHAT’S BROKEN
+1. **Scouty hardly moves** – camera follows X only after passing mid-screen; player rarely reaches it.  
+2. **Background looks like it’s moving** because camera pans but bg is wider than canvas.  
+3. **Obstacles/Hearts spawn off-screen** – they’re placed at `camPos + canvasWidth`, but camPos barely changes.  
+4. **Ground / hitboxes mis-aligned** – collider is 60 px lower than visible grass.  
+5. **No game-wide speed constant** – harder to tune.
+
+### GOAL
+* Scouty runs right with arrow keys (or holds still if no input).  
+* Camera scrolls smoothly so world advances.  
+* Background stays fixed to camera.  
+* Obstacles & hearts spawn just outside the right edge and scroll left into view.  
+* Ground collider matches the grass band.  
+* Simple polish: jump SFX, outline on Scouty, smaller default scale.
+
+---
+
+## ✨ EDIT INSTRUCTIONS
+
+### 1️⃣ `/components/player.js`
+```js
+export function createPlayer(k) {
+  const groundY = k.height() - 100;          // feet on grass
+  const SPEED   = 220;                       // horizontal run speed
+  const JUMP    = 420;
+
+  const player = k.add([
+    k.sprite('scouty'),
+    k.anchor('botleft'),                     // easier Y math
+    k.scale(0.35),
+    k.area({ scale: 0.35 }),
+    k.outline(1, k.rgb(0,0,0)),
+    k.body(),                               // enables isGrounded()
+    k.pos(100, groundY),
+    'player',
+  ]);
+
+  // Move L/R
+  k.onKeyDown('left',  () => player.move(-SPEED, 0));
+  k.onKeyDown('right', () => player.move( SPEED, 0));
+
+  // Jump
+  k.onKeyPress(['space','up'], () => {
+    if (player.isGrounded()) {
+      player.jump(JUMP);
+      k.play('jump').catch(()=>{});
+    }
+  });
+
+  // Keep inside screen horizontally (optional)
+  k.onUpdate(() => {
+    if (player.pos.x < 20) player.pos.x = 20;
+  });
+
+  return player;
+}
+2️⃣ /scenes/game.js
+js
+Copy
+Edit
+k.scene('game', () => {
+  // --- setup omitted for brevity ---
+
+  // CONSTANTS
+  const WORLD_SPEED = 160;      // scroll speed in px/sec
+  const groundY     = k.height() - 100;
+
+  // Ground collider aligned with grass
+  const ground = k.add([
+    k.rect(k.width()*5, 40),    // long invisible floor
+    k.pos(-400, groundY),       // start a bit left of camera
+    k.body({ isStatic: true }),
+    k.opacity(0),
+    'ground',
+  ]);
+
+  const player = createPlayer(k);
+
+  // Camera follows player X but never moves left
+  k.onUpdate(() => {
+    const camX = k.camPos().x;
+    if (player.pos.x > camX + 150) k.camPos(player.pos.x - 150, k.height()/2);
+  });
+
+  // WORLD AUTO-SCROLL: move everything tagged 'scroll'
+  k.onUpdate(() => {
+    const dx = -WORLD_SPEED * k.dt();
+    k.get('scroll').forEach(o => o.move(dx,0));
+  });
+3️⃣ /components/obstacles.js
+js
+Copy
+Edit
+const TYPES = ['box','bag','leaf'];
+export function spawnObstacle(k, speed){
+  const groundY = k.height() - 100;
+  return k.add([
+    k.sprite(k.choose(TYPES)),
+    k.anchor('botleft'),
+    k.scale(1),
+    k.area(),
+    k.outline(2,k.rgb(0,0,0)),
+    k.pos(k.camPos().x + k.width() + 100, groundY),
+    'obstacle','scroll',               // <-- tag so world auto-scroll moves it
+  ]);
+}
+
+export function updateObstacles(k){
+  k.get('obstacle').forEach(o => {
+    if (o.pos.x < k.camPos().x - 150) k.destroy(o);
+  });
+}
+4️⃣ /components/pickups.js
+Same pattern: tag hearts with 'scroll', spawn at groundY - rand(60,140).
+
+5️⃣ /main.js – lock background
+js
+Copy
+Edit
+function addLevelBackground(k, op=1){
+  const bg = k.add([
+    k.sprite('cityscape_bg'),
+    k.anchor('topleft'),
+    k.pos(0,0),
+    k.fixed(),               // pins to camera
+    k.z(-3),
+    k.opacity(op),
+  ]);
+  // scale once it loads so it fills canvas exactly
+  bg.onLoad(() => bg.scale = k.vec2(k.width()/bg.width, k.height()/bg.height));
+  return bg;
+}
+6️⃣ Spawn timers in game.js
+Use camPos for X when spawning so objects always start just off-screen:
+
+js
+Copy
+Edit
+if (obstacleTimer > k.rand(1,2)){
+  spawnObstacle(k, WORLD_SPEED);
+  obstacleTimer = 0;
+}
+✅ ACCEPTANCE CHECKLIST
+Scouty moves L/R, jumps, and stays ~28 px tall on grass.
+
+Camera slides right only when Scouty outruns it; never drifts left.
+
+Background appears static (no parallax gaps).
+
+Obstacles & hearts appear within 1 s, scroll left, collide properly.
+
+Ground collider matches visible grass; no hovering or sinking sprites.
+
+DELIVERABLE
+Update /components/player.js, /components/obstacles.js, /components/pickups.js, /scenes/game.js, /main.js as above. Mark each new block with // FIX:.

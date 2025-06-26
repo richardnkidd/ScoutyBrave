@@ -46,26 +46,22 @@ initGameOver(k);
 // Start with title scene
 k.go('title');
 
-// FIX: make bg perfectly locked to camera
-window.addLevelBackground = (k, opacity = 1) => {
+// FIX: lock background to camera perfectly
+window.addLevelBackground = (k, op=1) => {
     const bg = k.add([
         k.sprite('cityscape_bg'),
-        k.pos(0, 0),
-        k.fixed(),
+        k.anchor('topleft'),
+        k.pos(0,0),
+        k.fixed(),               // pins to camera
         k.z(-3),
-        k.opacity(opacity)
+        k.opacity(op),
     ]);
-
-    // scale to fill exactly the canvas to prevent edge scrolling
+    // scale once it loads so it fills canvas exactly
     k.wait(0.01, () => {
         if (bg.width && bg.height) {
-            bg.scale = k.vec2(
-                k.width() / bg.width,
-                k.height() / bg.height
-            );
+            bg.scale = k.vec2(k.width()/bg.width, k.height()/bg.height);
         }
     });
-    
     return bg;
 };
 

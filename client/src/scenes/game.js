@@ -7,19 +7,21 @@ export function initGame(k) {
         // Reset game state
         window.resetGameState();
         
-        // FIX: Add background using fixed helper
+        // Add background
         window.addLevelBackground(k);
         
-        // Game variables
+        // FIX: CONSTANTS
+        const WORLD_SPEED = 160;      // scroll speed in px/sec
+        const groundY     = k.height() - 100;
+        
+        // Game state
         let obstacleTimer = 0;
         let heartTimer = 0;
-        let gameSpeed = 100;
         
-        // FIX: ground collider matches grass band
+        // FIX: Ground collider aligned with grass
         const ground = k.add([
-            k.rect(k.width(), 40),
-            k.pos(0, k.height() - 100),   // <- was −40
-            k.area(),
+            k.rect(k.width()*5, 40),    // long invisible floor
+            k.pos(-400, groundY),       // start a bit left of camera
             k.body({ isStatic: true }),
             k.opacity(0),
             'ground',
@@ -28,12 +30,16 @@ export function initGame(k) {
         // Create player
         const player = createPlayer(k);
         
-        // FIX: camera only starts following when Scouty passes mid-screen
+        // FIX: Camera follows player X but never moves left
         k.onUpdate(() => {
-            const screenMidX = k.camPos().x;
-            if (player.pos.x > screenMidX) {
-                k.camPos(player.pos.x, k.height() / 2);
-            }
+            const camX = k.camPos().x;
+            if (player.pos.x > camX + 150) k.camPos(player.pos.x - 150, k.height()/2);
+        });
+
+        // FIX: WORLD AUTO-SCROLL: move everything tagged 'scroll'
+        k.onUpdate(() => {
+            const dx = -WORLD_SPEED * k.dt();
+            k.get('scroll').forEach(o => o.move(dx,0));
         });
 
         // UI Elements
@@ -86,28 +92,29 @@ export function initGame(k) {
             }
         }
 
-        // Game loop
+        // FIX: Spawn obstacles using WORLD_SPEED
         k.onUpdate(() => {
-            // Update timers
             obstacleTimer += k.dt();
+            
+            if (obstacleTimer > k.rand(1, 2)) {
+                spawnObstacle(k, WORLD_SPEED);
+                obstacleTimer = 0;
+                console.log("Obstacle spawn triggered");
+            }
+        });
+
+        // FIX: Spawn hearts using WORLD_SPEED 
+        k.onUpdate(() => {
             heartTimer += k.dt();
             
-            // Increase game speed over time
-            gameSpeed += k.dt() * 5;
-            
-            // Spawn obstacles
-            if (obstacleTimer > k.rand(1.5, 3.0)) {
-                spawnObstacle(k, gameSpeed);
-                obstacleTimer = 0;
-                console.log('Obstacle spawn triggered');
-            }
-            
-            // Spawn hearts less frequently
-            if (heartTimer > k.rand(8, 15)) {
-                spawnHeart(k, gameSpeed);
+            if (heartTimer > k.rand(5, 8)) {
+                spawnHeart(k, WORLD_SPEED);
                 heartTimer = 0;
             }
-            
+        });
+
+        // Game loop
+        k.onUpdate(() => {
             // Update game objects
             updateObstacles(k);
             updateHearts(k);
