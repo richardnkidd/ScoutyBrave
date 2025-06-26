@@ -1,0 +1,90 @@
+Fix the Scouty Sidescroller Game - Jump & Obstacle Visibility
+The game currently has Scouty moving left/right and ducking properly, but jumping doesn't work and obstacles aren't visible. Please fix these issues:
+1. Fix Jumping Mechanics
+The jump isn't working because the collision detection between the player and ground isn't properly established. In client/src/scenes/game.js:
+
+The ground is created with opacity(0) but needs proper collision setup
+Add a proper collision layer/tag to the ground
+Ensure the player's body() component properly detects the ground for isGrounded() checks
+
+Specific fix needed:
+javascript// In scenes/game.js, update the ground creation:
+const ground = k.add([
+    k.rect(5000, 40),
+    k.pos(-500, GROUND_Y),
+    k.body({ isStatic: true }),
+    k.area(), // Add collision area
+    k.opacity(0),
+    'ground',
+]);
+2. Fix Obstacle Visibility
+The obstacles aren't showing because:
+A. Sprite Loading Issues
+In client/src/game.js, the sprites are loaded from /sprites/ but the files might not exist or be in the wrong format.
+Actions needed:
+
+Verify the sprite files exist in public/sprites/: box.svg, bag.svg, leaf.svg
+If they don't exist, create simple placeholder sprites or use colored rectangles as fallbacks
+
+B. Add Fallback Sprites
+In client/src/components/obstacles.js, add fallback colored rectangles if sprites fail:
+javascript// Modify spawnObstacle to include fallback sprites
+export function spawnObstacle(k, speed){
+    const type = k.choose(TYPES);
+    const obstacle = k.add([
+        // Try sprite first, fallback to colored rect
+        k.sprite(type).on("error", () => {
+            // Fallback to colored rectangle
+            return k.rect(40, 60);
+        }),
+        k.color(type === 'box' ? [139, 69, 19] : type === 'bag' ? [100, 100, 100] : [0, 128, 0]),
+        k.anchor('botleft'),
+        k.scale(1),
+        k.area(),
+        k.outline(2, k.rgb(0, 0, 0)),
+        k.pos(k.camPos().x + k.width() + 50, GROUND_Y),
+        'obstacle',
+        'scroll',
+    ]);
+    
+    return obstacle;
+}
+C. Debug Obstacle Spawning
+Add visible debug logging to confirm obstacles are spawning:
+javascript// In scenes/game.js, add after obstacle spawn:
+console.log(`Obstacle spawned at x:${obstacle.pos.x}, y:${obstacle.pos.y}, type:${type}`);
+console.log(`Camera position: ${k.camPos().x}, Screen width: ${k.width()}`);
+3. Additional Fixes
+A. Ensure Player Has Proper Collision Area
+In client/src/components/player.js, make sure the player has a collision area:
+javascriptconst player = k.add([
+    k.sprite('scouty'),
+    k.anchor('botleft'),
+    k.scale(BASE_SCALE * 2),
+    k.area(), // Ensure this is present
+    k.body(), // This enables physics
+    k.pos(50, GROUND_Y),
+    'player',
+]);
+B. Fix Camera Following
+The camera should show obstacles properly. In scenes/game.js, ensure the camera doesn't move too far ahead:
+javascript// Adjust camera to keep more of the screen visible
+k.onUpdate(() => {
+    if (player.pos.x > k.camPos().x + 200) { // Changed from 250 to 200
+        k.camPos(player.pos.x - 200, k.height()/2);
+    }
+});
+4. Create Missing Sprite Files (if needed)
+If sprite files are missing, create simple SVG placeholders in public/sprites/:
+box.svg:
+svg<svg width="40" height="60" xmlns="http://www.w3.org/2000/svg">
+  <rect width="40" height="60" fill="#8B4513" stroke="#000" stroke-width="2"/>
+</svg>
+bag.svg:
+svg<svg width="40" height="50" xmlns="http://www.w3.org/2000/svg">
+  <rect width="40" height="50" fill="#696969" stroke="#000" stroke-width="2" rx="5"/>
+</svg>
+leaf.svg:
+svg<svg width="30" height="30" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="15" cy="15" rx="15" ry="10" fill="#228B22" stroke="#000" stroke-width="2"/>
+</svg>

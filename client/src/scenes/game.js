@@ -94,8 +94,10 @@ export function initGame(k) {
             obstacleTimer += k.dt();
             
             if (obstacleTimer > k.rand(1, 2)) {
-                spawnObstacle(k, WORLD_SPEED);
+                const obstacle = spawnObstacle(k, WORLD_SPEED);
                 obstacleTimer = 0;
+                console.log(`Obstacle spawned at x:${obstacle.pos.x}, y:${obstacle.pos.y}`);
+                console.log(`Camera position: ${k.camPos().x}, Screen width: ${k.width()}`);
                 console.log("Obstacle spawn triggered");
             }
         });

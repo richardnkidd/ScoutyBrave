@@ -3,17 +3,25 @@ import { GROUND_Y } from '../config.js';
 // FIX: Hearts with constants and proper positioning
 export function spawnHeart(k, gameSpeed) {
     const heart = k.add([
-        k.sprite('heart'),
+        k.rect(24, 24), // Fallback rectangle
+        k.color([255, 0, 0]), // Red color for heart
         k.anchor('botleft'),
         // float 60-140 px above ground
         k.pos(k.camPos().x + k.width() + 50, 
               GROUND_Y - k.rand(60, 140)),
         k.area(),
-        k.scale(1),
+        k.scale(2), // Make more visible
         k.z(1),
         k.outline(2, k.rgb(0,0,0)),
-        'heart','scroll',               // tag so world auto-scroll moves it
+        'heart', 'scroll',               // tag so world auto-scroll moves it
     ]);
+    
+    // Try to load sprite, but keep the colored rectangle as fallback
+    try {
+        heart.use(k.sprite('heart'));
+    } catch (e) {
+        console.log('Heart sprite failed, using red rectangle');
+    }
 
     // Gentle floating animation
     heart.onUpdate(() => {
