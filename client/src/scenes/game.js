@@ -129,8 +129,11 @@ export function initGame(k) {
             }
         });
 
-        // FIX: Collision handling using global events
+        // FIX: Collision handling using global events with safe destruction
         k.onCollide('player', 'obstacle', (player, obstacle) => {
+            // Check if obstacle still exists before processing
+            if (!obstacle.exists()) return;
+            
             // Increase fear
             window.gameState.fear += 15;
             
@@ -138,9 +141,6 @@ export function initGame(k) {
             if (window.audioEnabled) {
                 k.play('hit', { volume: 0.3 });
             }
-            
-            // Remove obstacle
-            k.destroy(obstacle);
             
             // Visual feedback
             k.add([
@@ -153,9 +153,17 @@ export function initGame(k) {
                 k.lifespan(1),
                 k.move(0, -50)
             ]);
+            
+            // FIX: Safe removal - remove tags first then destroy
+            obstacle.unuse('obstacle');
+            obstacle.unuse('scroll');
+            k.destroy(obstacle);
         });
 
         k.onCollide('player', 'heart', (player, heart) => {
+            // Check if heart still exists before processing
+            if (!heart.exists()) return;
+            
             // Reduce fear
             window.gameState.fear = Math.max(0, window.gameState.fear - 25);
             
@@ -166,9 +174,6 @@ export function initGame(k) {
             if (window.audioEnabled) {
                 k.play('success', { volume: 0.5 });
             }
-            
-            // Remove heart
-            k.destroy(heart);
             
             // Visual feedback
             k.add([
@@ -181,6 +186,11 @@ export function initGame(k) {
                 k.lifespan(1),
                 k.move(0, -50)
             ]);
+            
+            // FIX: Safe removal - remove tags first then destroy
+            heart.unuse('heart');
+            heart.unuse('scroll');
+            k.destroy(heart);
         });
 
         // Pause game

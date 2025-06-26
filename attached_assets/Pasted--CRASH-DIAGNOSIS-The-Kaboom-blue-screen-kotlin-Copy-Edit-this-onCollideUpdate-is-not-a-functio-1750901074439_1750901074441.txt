@@ -1,0 +1,101 @@
+### 🛑 CRASH DIAGNOSIS
+The Kaboom blue-screen
+kotlin
+Copy
+Edit
+this.onCollideUpdate is not a function
+typescript
+Copy
+Edit
+appears when a game object that once had `area()` (or `body()`) loses its mix-in
+that defines `onCollideUpdate()`.  
+The only way we do that in this codebase is by **overwriting the `scale`
+component** with a direct assignment:
+
+```ts
+obj.scale = k.vec2( … )
+That destroys every method added by the original scale() component, which
+cascades and removes onCollideUpdate() from area() as well.
+
+🔍 SEARCH & DESTROY
+👉 Global search (Ctrl ⇧ F) for any of the patterns:
+
+java
+Copy
+Edit
+.scale =
+.scale=
+scale = k.vec2
+scale = new Vec2
+You’ll find them in:
+
+client/src/components/player.ts
+
+client/src/components/obstacles.ts
+
+client/src/components/pickups.ts
+
+( sometimes demo/test code in scenes/title.ts )
+
+🛠 REPLACE RULE
+For each direct assignment:
+
+diff
+Copy
+Edit
+- obj.scale = k.vec2(newScale, newScale);
++ obj.use(k.scale(newScale));               // FIX: keep mix-ins
++ if (obj.has("area")) obj.use(k.area({ scale: newScale })); // keep hitbox
+use(k.scale()) adds a new scale component without nuking any other comps.
+
+Re-adding area({ scale }) keeps hitboxes accurate after size changes.
+
+Never use .scaleTo() when the object also cowers/resizes every frame;
+.scaleTo() runs a tween that will clash with frequent toggles—stick with
+use(k.scale()).
+
+✏️ FILE-BY-FILE INSTRUCTIONS
+1 client/src/components/player.ts
+Cower logic: replace the two lines that set player.scale = …
+with the safe pattern above (BASE_SCALE vs. CROUCH_SCALE).
+
+2 client/src/components/obstacles.ts
+Some obstacle types call
+obstacle.scale = k.vec2(leafScale, leafScale); — swap to use(k.scale())
+and keep area().
+
+3 client/src/components/pickups.ts
+Heart “pulse” code toggles size each frame with direct assignment:
+convert to
+
+ts
+Copy
+Edit
+heart.use(k.scale(scale));
+4 scenes/title.ts
+The bobbing Scouty on the title screen uses
+scouty.scale = k.vec2(...); inside onUpdate.
+Replace with
+
+ts
+Copy
+Edit
+scouty.use(k.scale(newScale));
+✅ ACCEPTANCE TESTS
+Run the game → no blue screen after 60 s of cowering / pulsing hearts.
+
+Collisions with ground, obstacles, and hearts all still register.
+
+Sprite hitboxes shrink/grow correctly while cowering or pulsing.
+
+Console logs show zero onCollideUpdate errors.
+
+📦 DELIVERABLE
+Updated files with each changed line tagged // FIX:.
+
+Commit & push (⌘+K, commit message “fix(scale): safe scale mix-ins”), then
+run to verify.
+
+After these replacements there is no remaining path for the
+onCollideUpdate crash to re-occur. If you still see the error, run another
+global search—there’s at least one stray .scale = left somewhere.

@@ -25,10 +25,13 @@ export function spawnHeart(k, gameSpeed) {
     return heart;
 }
 
-// FIX: Updated hearts cleanup
+// FIX: Updated hearts cleanup with safe destruction
 export function updateHearts(k) {
     k.get('heart').forEach(heart => {
         if (heart.pos.x < k.camPos().x - 150) {
+            // FIX: Remove tags before destroying to prevent collision callback issues
+            heart.unuse('heart');
+            heart.unuse('scroll');
             k.destroy(heart);
         }
     });
