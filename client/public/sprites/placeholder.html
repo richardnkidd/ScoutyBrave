@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sprite Generator</title>
+</head>
+<body>
+    <canvas id="spriteGen" width="64" height="64"></canvas>
+    <script>
+        const canvas = document.getElementById('spriteGen');
+        const ctx = canvas.getContext('2d');
+
+        // Generate simple colored rectangles for sprites
+        
+        // Scouty (blue dog character)
+        ctx.fillStyle = '#4169E1';
+        ctx.fillRect(8, 8, 48, 48);
+        ctx.fillStyle = '#000';
+        ctx.fillRect(16, 16, 8, 8); // eye
+        ctx.fillRect(40, 16, 8, 8); // eye
+        
+        // Save this as scouty.png manually by right-clicking
+        console.log('Blue character sprite ready - save as scouty.png');
+        
+        setTimeout(() => {
+            // Box sprite (brown)
+            ctx.clearRect(0, 0, 64, 64);
+            ctx.fillStyle = '#8B4513';
+            ctx.fillRect(0, 0, 32, 32);
+            console.log('Brown box sprite ready - save as box.png');
+        }, 1000);
+        
+        setTimeout(() => {
+            // Bag sprite (gray)
+            ctx.clearRect(0, 0, 64, 64);
+            ctx.fillStyle = '#808080';
+            ctx.fillRect(0, 0, 32, 32);
+            console.log('Gray bag sprite ready - save as bag.png');
+        }, 2000);
+        
+        setTimeout(() => {
+            // Leaf sprite (green)
+            ctx.clearRect(0, 0, 64, 64);
+            ctx.fillStyle = '#228B22';
+            ctx.fillRect(0, 0, 24, 24);
+            console.log('Green leaf sprite ready - save as leaf.png');
+        }, 3000);
+        
+        setTimeout(() => {
+            // Heart sprite (red)
+            ctx.clearRect(0, 0, 64, 64);
+            ctx.fillStyle = '#FF0000';
+            ctx.fillRect(0, 0, 24, 24);
+            console.log('Red heart sprite ready - save as heart.png');
+        }, 4000);
+    </script>
+</body>
+</html>

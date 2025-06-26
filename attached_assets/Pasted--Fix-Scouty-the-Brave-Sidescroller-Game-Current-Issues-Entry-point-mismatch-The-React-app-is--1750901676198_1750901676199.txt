@@ -1,0 +1,153 @@
+🎮 Fix "Scouty the Brave" Sidescroller Game
+Current Issues:
+
+Entry point mismatch: The React app is trying to render a commented-out App.tsx while the actual game is in vanilla JavaScript files using KAPLAY engine
+Missing canvas element: KAPLAY expects document.getElementById('gameCanvas') but no canvas exists
+Module loading: JavaScript game files aren't being loaded by the React build system
+Missing assets: Referenced sprites and sounds don't exist
+
+Required Fixes:
+1. Fix the React Entry Point (client/src/App.tsx)
+Replace the entire commented-out content with:
+tsximport { useEffect, useRef } from 'react';
+import './game.js';
+
+function App() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    // Game initialization happens in game.js
+    // Just ensure canvas is ready
+    if (canvasRef.current) {
+      console.log('Canvas ready for KAPLAY');
+    }
+  }, []);
+
+  return (
+    <div style={{ width: '100vw', height: '100vh', overflow: 'hidden', backgroundColor: '#000' }}>
+      <canvas 
+        ref={canvasRef}
+        id="gameCanvas"
+        style={{ 
+          width: '100%', 
+          height: '100%',
+          display: 'block'
+        }}
+      />
+    </div>
+  );
+}
+
+export default App;
+2. Add KAPLAY to index.html
+Create/update client/index.html:
+html<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scouty the Brave</title>
+    <script src="https://unpkg.com/kaplay@3000.0.0/dist/kaplay.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+3. Update Vite Config to handle JS imports
+Update client/vite.config.js to include:
+jsexport default {
+  // ... existing config
+  optimizeDeps: {
+    include: ['kaplay']
+  },
+  build: {
+    rollupOptions: {
+      external: []
+    }
+  }
+}
+4. Create Placeholder Assets
+In the client/public folder, create:
+/public/
+  /sprites/
+    scouty.png      (64x64 pixel character sprite - simple rectangle)
+    box.png         (32x32 brown box)
+    bag.png         (32x32 gray bag)
+    leaf.png        (24x24 green leaf)
+    heart.png       (24x24 red heart)
+    cityscape_bg.png (800x600 simple city skyline)
+  /sounds/
+    background.mp3  (empty audio file or simple loop)
+    hit.mp3         (short impact sound)
+    success.mp3     (short success chime)
+For quick placeholders, create colored rectangles as PNGs:
+
+scouty.png: Blue rectangle
+box.png: Brown rectangle
+bag.png: Gray rectangle
+leaf.png: Green rectangle
+heart.png: Red rectangle
+cityscape_bg.png: Gray gradient with simple rectangles for buildings
+
+5. Fix Module Loading (client/src/game.js)
+Update the KAPLAY initialization to work with the global kaplay:
+js// At the top of game.js, change from:
+const k = kaplay({...});
+
+// To:
+const k = window.kaplay({
+    canvas: document.getElementById('gameCanvas'),
+    width: 800,
+    height: 600,
+    background: [135, 206, 235],
+    crisp: true,
+    pixelDensity: 1,
+    gravity: 1600
+});
+
+// Make k globally available
+window.k = k;
+6. Fix Import Paths
+In all scene files (title.js, game.js, gameover.js), ensure imports use relative paths:
+js// Change any imports like:
+import { createPlayer } from '../components/player.js';
+
+// To ensure .js extension is included
+7. Initialize Game After DOM Ready
+Wrap the game initialization in game.js:
+js// At the bottom of game.js
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        k.go('title');
+    });
+} else {
+    k.go('title');
+}
+8. Fix Audio Store Integration
+The game uses a vanilla JS audio system but also has a React/Zustand audio store. For now, disable the Zustand integration and use only the vanilla JS audio in utils/audio.js.
+Testing Steps:
+
+The game should load showing the title screen with "SCOUTY THE BRAVE"
+Pressing SPACE should start the game
+Arrow keys should move the character
+The character should be able to jump with SPACE
+Obstacles should spawn and move left
+Collision with obstacles should increase fear
+Hearts should reduce fear when collected
+Game over should occur when fear reaches 100%
+
+Quick Asset Generation (if needed):
+For quick colored rectangle sprites, you can use this HTML to generate them:
+html<canvas id="spriteGen" width="64" height="64"></canvas>
+<script>
+const canvas = document.getElementById('spriteGen');
+const ctx = canvas.getContext('2d');
+
+// Generate scouty.png (blue rectangle)
+ctx.fillStyle = '#4169E1';
+ctx.fillRect(0, 0, 64, 64);
+// Right-click and save as scouty.png
+
+// Repeat for other sprites with different colors and sizes
+</script>

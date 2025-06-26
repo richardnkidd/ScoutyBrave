@@ -36,17 +36,9 @@
     </style>
 </head>
 <body>
-    <div id="gameContainer">
-        <canvas id="gameCanvas"></canvas>
-        <div class="instructions">
-            Arrow Keys: Move | Space: Jump | Down: Cower
-        </div>
-    </div>
+    <div id="root"></div>
     
-    <!-- KAPLAY (Kaboom successor) from CDN -->
-    <script src="https://unpkg.com/kaplay@3001/dist/kaplay.js">
-    
-    <!-- Game scripts -->
-    <script type="module" src="/src/game.js"></script>
+    <!-- KAPLAY will be loaded via Vite -->
+    <script type="module" src="/src/main.tsx"></script>
 </body>
 </html>

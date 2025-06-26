@@ -3,8 +3,14 @@ import { initGame } from './scenes/game.js';
 import { initGameOver } from './scenes/gameover.js';
 import { initAudio } from './utils/audio.js';
 
-// Initialize KAPLAY (Kaboom successor)
-const k = kaplay({
+// Check if KAPLAY is available
+if (!window.kaplay) {
+    console.error('KAPLAY not loaded');
+    throw new Error('KAPLAY library not available');
+}
+
+// Initialize KAPLAY
+const k = window.kaplay({
     canvas: document.getElementById('gameCanvas'),
     width: 800,
     height: 600,
@@ -43,6 +49,9 @@ initTitle(k);
 initGame(k);
 initGameOver(k);
 
+// Make k globally available
+window.k = k;
+
 // Start with title scene
 k.go('title');
 
@@ -60,7 +69,9 @@ window.addLevelBackground = (k, op = 1) => {
     // Use k.wait instead of bg.onLoad for KAPLAY compatibility
     k.wait(0.1, () => {
         if (bg.width && bg.height) {
-            bg.scaleTo(k.vec2(k.width()/bg.width, k.height()/bg.height));  // FIX: use scaleTo for KAPLAY
+            const scaleX = k.width() / bg.width;
+            const scaleY = k.height() / bg.height;
+            bg.scale = k.vec2(scaleX, scaleY);  // FIX: direct scale assignment for background (no collision)
         }
     });
     
@@ -77,6 +88,6 @@ window.resetGameState = () => {
 window.updateHighScore = () => {
     if (window.gameState.score > window.gameState.highScore) {
         window.gameState.highScore = window.gameState.score;
-        localStorage.setItem('scoutyHighScore', window.gameState.highScore);
+        localStorage.setItem('scoutyHighScore', window.gameState.score);
     }
 };
