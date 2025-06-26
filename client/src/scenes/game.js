@@ -132,58 +132,66 @@ export function initGame(k) {
             }
         });
 
-        // Collision handling
-        player.onCollide('obstacle', (obstacle) => {
-            // Increase fear
-            window.gameState.fear += 15;
-            
-            // Play hit sound
-            if (window.audioEnabled) {
-                k.play('hit', { volume: 0.3 });
-            }
-            
-            // Remove obstacle
-            k.destroy(obstacle);
-            
-            // Visual feedback
-            k.add([
-                k.text('+15 Fear!', {
-                    size: 20,
-                    font: 'monospace'
-                }),
-                k.pos(player.pos.x, player.pos.y - 30),
-                k.color(255, 0, 0),
-                k.lifespan(1),
-                k.move(0, -50)
-            ]);
-        });
+        // FIX: Collision handling using onUpdate loop
+        k.onUpdate(() => {
+            // Check obstacle collisions
+            k.get('obstacle').forEach(obstacle => {
+                if (player.isColliding(obstacle)) {
+                    // Increase fear
+                    window.gameState.fear += 15;
+                    
+                    // Play hit sound
+                    if (window.audioEnabled) {
+                        k.play('hit', { volume: 0.3 });
+                    }
+                    
+                    // Remove obstacle
+                    k.destroy(obstacle);
+                    
+                    // Visual feedback
+                    k.add([
+                        k.text('+15 Fear!', {
+                            size: 20,
+                            font: 'monospace'
+                        }),
+                        k.pos(player.pos.x, player.pos.y - 30),
+                        k.color(255, 0, 0),
+                        k.lifespan(1),
+                        k.move(0, -50)
+                    ]);
+                }
+            });
 
-        player.onCollide('heart', (heart) => {
-            // Reduce fear
-            window.gameState.fear = Math.max(0, window.gameState.fear - 25);
-            
-            // Increase score
-            window.gameState.score += 100;
-            
-            // Play success sound
-            if (window.audioEnabled) {
-                k.play('success', { volume: 0.5 });
-            }
-            
-            // Remove heart
-            k.destroy(heart);
-            
-            // Visual feedback
-            k.add([
-                k.text('-25 Fear!', {
-                    size: 20,
-                    font: 'monospace'
-                }),
-                k.pos(player.pos.x, player.pos.y - 30),
-                k.color(0, 255, 0),
-                k.lifespan(1),
-                k.move(0, -50)
-            ]);
+            // Check heart collisions
+            k.get('heart').forEach(heart => {
+                if (player.isColliding(heart)) {
+                    // Reduce fear
+                    window.gameState.fear = Math.max(0, window.gameState.fear - 25);
+                    
+                    // Increase score
+                    window.gameState.score += 100;
+                    
+                    // Play success sound
+                    if (window.audioEnabled) {
+                        k.play('success', { volume: 0.5 });
+                    }
+                    
+                    // Remove heart
+                    k.destroy(heart);
+                    
+                    // Visual feedback
+                    k.add([
+                        k.text('-25 Fear!', {
+                            size: 20,
+                            font: 'monospace'
+                        }),
+                        k.pos(player.pos.x, player.pos.y - 30),
+                        k.color(0, 255, 0),
+                        k.lifespan(1),
+                        k.move(0, -50)
+                    ]);
+                }
+            });
         });
 
         // Pause game
