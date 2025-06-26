@@ -1,17 +1,18 @@
-// FIX: Hearts with scroll tag and proper positioning
+import { GROUND_Y } from '../config.js';
+
+// FIX: Hearts with constants and proper positioning
 export function spawnHeart(k, gameSpeed) {
-    const groundY = k.height() - 100;
-    const heart   = k.add([
+    const heart = k.add([
         k.sprite('heart'),
         k.anchor('botleft'),
         // float 60-140 px above ground
-        k.pos(k.camPos().x + k.width() + 100, 
-              groundY - k.rand(60, 140)),
+        k.pos(k.camPos().x + k.width() + 50, 
+              GROUND_Y - k.rand(60, 140)),
         k.area(),
         k.scale(1),
         k.z(1),
         k.outline(2, k.rgb(0,0,0)),
-        'heart','scroll',               // <-- tag so world auto-scroll moves it
+        'heart','scroll',               // tag so world auto-scroll moves it
     ]);
 
     // Gentle floating animation

@@ -1,0 +1,129 @@
+### 🔍 QUALITY-ASSURANCE REPORT  —  “Scouty the Brave”  (2025-06-25)
+
+| Severity | Title | File(s) | Root Cause | Evidence |
+|----------|-------|---------|------------|----------|
+| ❌ **CRITICAL** | **Blue-screen error “this.onCollideUpdate is not a function”** | Any object **missing `area()`** but given `body()` or `move()` (Kaboom tries to call `onCollideUpdate` on every object with motion) | `createPlayer()` resizes Scouty by reassigning `player.scale = k.vec2(...)`; this *replaces* the built-in scale component and strips the area mixin (which contained `onCollideUpdate`). | Blue error screen + traceback. |
+| ❌ **CRITICAL** | **Scouty floats & background scrolls** | Mismatched ground Y (grass at `height – 100`, collider at `height – 40`) & bg wider than canvas | Screenshot shows blue river band at bottom while Scouty hovers above grass; skyline moves. |
+| ❌ **CRITICAL** | **Obstacles & hearts never appear** | Spawn X uses `player.pos.x + width + 400`, but player hardly moves → objects sit off-screen; they’re tagged `"scroll"` but world isn’t auto-scrolled. | Console “Spawned obstacle …” but nothing visible. |
+| ⚠️ **MAJOR** | **Player scale mutates mid-game** | Cower logic calls `player.scale = vec2(...)` instead of `player.scaleTo()`; destroys scale component, breaks hitbox + collision callbacks. | Inspect `/components/player.js` lines under “Cower action”. |
+| ⚠️ **MAJOR** | **Background shows edges when camera pans** | `cityscape_bg` (1152×768) simply scales but camera pans further than bg width. | Visible orange band gap when sprinting right. |
+| ⚠️ **MINOR** | **Hard-coded magic numbers** | Ground Y, speed, jump force repeated in multiple files. | Duplication across `player.js`, `obstacles.js`, `pickups.js`. |
+
+---
+
+### 🛠️  FIX PLAN
+
+#### 1.  Restore safe scaling & area mixin  
+```js
+// components/player.js  (inside createPlayer)
+const BASE_SCALE = 0.35;
+
+const player = k.add([
+  k.sprite('scouty'),
+  k.anchor('botleft'),
+  k.scale(BASE_SCALE),          // component stays intact
+  k.area({ scale: BASE_SCALE }),
+  k.body(),
+  k.pos(50, groundY),
+  'player',
+]);
+
+// Cower toggle
+const CROUCH_SCALE = 0.25;
+if (k.isKeyDown('down')) {
+  if (!isCowering) {
+    isCowering = true;
+    player.use(k.scale(CROUCH_SCALE));   // FIX: add, don’t overwrite
+    player.opacity = 0.7;
+  }
+} else if (isCowering) {
+  isCowering = false;
+  player.use(k.scale(BASE_SCALE));       // restore
+  player.opacity = 1;
+}
+2. Single “world constants” module
+Create /client/src/config.js
+
+js
+Copy
+Edit
+export const GROUND_Y   = 500;      // 600 canvas → 100-px water + grass
+export const RUN_SPEED  = 200;
+export const JUMP_FORCE = 420;
+export const WORLD_SPEED= 160;
+Import these constants in player.js, obstacles.js, pickups.js, game.js instead of duplicating numbers.
+
+3. Align ground & background
+js
+Copy
+Edit
+// scenes/game.js
+const ground = k.add([
+  k.rect(5000, 40),
+  k.pos(-500, GROUND_Y),
+  k.body({ isStatic: true }),
+  k.opacity(0),
+  'ground',
+]);
+
+// main.js  – lock bg and scale exactly once
+function addLevelBackground(k, op = 1) {
+  const bg = k.add([
+    k.sprite('cityscape_bg'),
+    k.anchor('topleft'),
+    k.pos(0, 0),
+    k.fixed(),
+    k.z(-3),
+    k.opacity(op),
+  ]);
+  bg.onLoad(() => bg.scale = k.vec2(k.width()/bg.width, k.height()/bg.height));
+}
+4. Make the world auto-scroll & spawn correctly
+js
+Copy
+Edit
+// scenes/game.js  (add once)
+k.onUpdate(() => {
+  const dx = -WORLD_SPEED * k.dt();
+  k.get('scroll').forEach(o => o.move(dx, 0));
+});
+
+// obstacles.js / pickups.js
+k.pos(k.camPos().x + k.width() + 50, GROUND_Y)
+'tag','obstacle','scroll'
+5. Camera follows only on X after Scouty reaches 1/3 screen
+js
+Copy
+Edit
+k.onUpdate(() => {
+  if (player.pos.x > k.camPos().x + 250)
+      k.camPos(player.pos.x - 250, k.height()/2);
+});
+6. Replace any direct player.scale = with player.use(k.scale(…)) or player.scaleTo(), to preserve component hooks.
+✅ AFTER PATCH: ACCEPTANCE CRITERIA
+No blue-screen crashes after 30 s of play.
+
+Scouty stands on grass (no hover) and camera slides; skyline remains fixed.
+
+Obstacles & hearts enter from right within 1 s; collisions register.
+
+Cowering shrinks sprite but collisions still work; jumping restores scale.
+
+All numeric values come from config.js.
+
+📋 DELIVERABLE
+Update these files:
+
+/client/src/config.js (new)
+
+/components/player.js
+
+/components/obstacles.js
+
+/components/pickups.js
+
+/scenes/game.js
+
+/main.js
+
+Mark each change with // FIX:. After applying, press Run and verify the acceptance criteria. ```

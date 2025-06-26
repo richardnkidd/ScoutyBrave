@@ -1,6 +1,7 @@
 import { createPlayer } from '../components/player.js';
 import { spawnObstacle, updateObstacles } from '../components/obstacles.js';
 import { spawnHeart, updateHearts } from '../components/pickups.js';
+import { GROUND_Y, WORLD_SPEED } from '../config.js';
 
 export function initGame(k) {
     k.scene('game', () => {
@@ -10,18 +11,14 @@ export function initGame(k) {
         // Add background
         window.addLevelBackground(k);
         
-        // FIX: CONSTANTS
-        const WORLD_SPEED = 160;      // scroll speed in px/sec
-        const groundY     = k.height() - 100;
-        
         // Game state
         let obstacleTimer = 0;
         let heartTimer = 0;
         
-        // FIX: Ground collider aligned with grass
+        // FIX: Align ground & background with constants
         const ground = k.add([
-            k.rect(k.width()*5, 40),    // long invisible floor
-            k.pos(-400, groundY),       // start a bit left of camera
+            k.rect(5000, 40),
+            k.pos(-500, GROUND_Y),
             k.body({ isStatic: true }),
             k.opacity(0),
             'ground',
@@ -30,16 +27,16 @@ export function initGame(k) {
         // Create player
         const player = createPlayer(k);
         
-        // FIX: Camera follows player X but never moves left
+        // FIX: Camera follows only on X after Scouty reaches 1/3 screen
         k.onUpdate(() => {
-            const camX = k.camPos().x;
-            if (player.pos.x > camX + 150) k.camPos(player.pos.x - 150, k.height()/2);
+            if (player.pos.x > k.camPos().x + 250)
+                k.camPos(player.pos.x - 250, k.height()/2);
         });
 
-        // FIX: WORLD AUTO-SCROLL: move everything tagged 'scroll'
+        // FIX: Make the world auto-scroll
         k.onUpdate(() => {
             const dx = -WORLD_SPEED * k.dt();
-            k.get('scroll').forEach(o => o.move(dx,0));
+            k.get('scroll').forEach(o => o.move(dx, 0));
         });
 
         // UI Elements
@@ -92,7 +89,7 @@ export function initGame(k) {
             }
         }
 
-        // FIX: Spawn obstacles using WORLD_SPEED
+        // FIX: Spawn obstacles using constants
         k.onUpdate(() => {
             obstacleTimer += k.dt();
             
@@ -103,7 +100,7 @@ export function initGame(k) {
             }
         });
 
-        // FIX: Spawn hearts using WORLD_SPEED 
+        // FIX: Spawn hearts using constants
         k.onUpdate(() => {
             heartTimer += k.dt();
             
@@ -132,7 +129,7 @@ export function initGame(k) {
             }
         });
 
-        // FIX: Collision handling using collision events
+        // FIX: Collision handling using global events
         k.onCollide('player', 'obstacle', (player, obstacle) => {
             // Increase fear
             window.gameState.fear += 15;

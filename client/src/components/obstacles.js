@@ -1,8 +1,9 @@
+import { GROUND_Y } from '../config.js';
+
 const TYPES = ['box','bag','leaf'];
 
-// FIX: Updated obstacle spawning with scroll tag
+// FIX: Updated obstacle spawning with constants and proper positioning
 export function spawnObstacle(k, speed){
-    const groundY = k.height() - 100;
     const type = k.choose(TYPES);
     const obstacle = k.add([
         k.sprite(type),
@@ -10,8 +11,9 @@ export function spawnObstacle(k, speed){
         k.scale(1),
         k.area(),
         k.outline(2,k.rgb(0,0,0)),
-        k.pos(k.camPos().x + k.width() + 100, groundY),
-        'obstacle','scroll',               // <-- tag so world auto-scroll moves it
+        // FIX: spawn correctly at camera edge
+        k.pos(k.camPos().x + k.width() + 50, GROUND_Y),
+        'obstacle','scroll',               // tag so world auto-scroll moves it
     ]);
     
     console.log('Spawned obstacle:', type, 'at position:', obstacle.pos.x, obstacle.pos.y);

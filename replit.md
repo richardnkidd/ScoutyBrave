@@ -94,13 +94,14 @@ Recent Changes:
 - June 25, 2025: Added pixel art sprites for Scouty, obstacles, and hearts
 - June 25, 2025: Implemented cityscape background with proper scaling
 - June 25, 2025: Fixed sprite scaling and visibility issues
-- June 25, 2025: Comprehensive game improvements:
-  * Full background display without zoom
-  * Scouty scaled to 0.65 (~20px tall) with matching hitbox
-  * Obstacles with black outlines and proper z-layering
-  * Fixed jump mechanics with space/up keys and gravity
-  * Camera follows player horizontally while keeping horizon level
-  * Title screen polished with centered text and background opacity
+- June 26, 2025: Major architecture overhaul to fix critical errors:
+  * Created config.js for centralized constants (GROUND_Y=500, speeds, scales)
+  * Fixed "onCollideUpdate is not a function" by using scaleTo() instead of direct scale assignment
+  * Aligned ground collider with grass band in cityscape background
+  * Implemented proper auto-scrolling world mechanics with 'scroll' tagged objects
+  * Fixed background edge scrolling with exact canvas scaling
+  * Restored safe component scaling that preserves area mixin and collision detection
+  * Camera follows player after reaching 1/3 screen position
 
 ## User Preferences
 

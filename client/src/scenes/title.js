@@ -65,7 +65,7 @@ export function initTitle(k) {
             k.sprite('scouty'),
             k.pos(100, k.height() - 100),
             k.anchor('center'),
-            k.scale(0.35) // match new in-game scale or even smaller
+            k.scale(0.3) // slightly smaller for title
         ]);
 
         // Simple animation

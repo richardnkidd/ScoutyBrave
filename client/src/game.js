@@ -46,22 +46,24 @@ initGameOver(k);
 // Start with title scene
 k.go('title');
 
-// FIX: lock background to camera perfectly
-window.addLevelBackground = (k, op=1) => {
+// FIX: lock bg and scale exactly once
+window.addLevelBackground = (k, op = 1) => {
     const bg = k.add([
         k.sprite('cityscape_bg'),
         k.anchor('topleft'),
-        k.pos(0,0),
-        k.fixed(),               // pins to camera
+        k.pos(0, 0),
+        k.fixed(),
         k.z(-3),
         k.opacity(op),
     ]);
-    // scale once it loads so it fills canvas exactly
-    k.wait(0.01, () => {
+    
+    // Use k.wait instead of bg.onLoad for Kaboom.js compatibility
+    k.wait(0.1, () => {
         if (bg.width && bg.height) {
             bg.scale = k.vec2(k.width()/bg.width, k.height()/bg.height);
         }
     });
+    
     return bg;
 };
 
