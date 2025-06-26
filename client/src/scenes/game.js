@@ -129,11 +129,8 @@ export function initGame(k) {
             }
         });
 
-        // FIX: Collision handling using global events with safe destruction
+        // FIX: Collision handling using global events with KAPLAY
         k.onCollide('player', 'obstacle', (player, obstacle) => {
-            // Check if obstacle still exists before processing
-            if (!obstacle.exists()) return;
-            
             // Increase fear
             window.gameState.fear += 15;
             
@@ -154,16 +151,11 @@ export function initGame(k) {
                 k.move(0, -50)
             ]);
             
-            // FIX: Safe removal - remove tags first then destroy
-            obstacle.unuse('obstacle');
-            obstacle.unuse('scroll');
+            // FIX: Safe removal for KAPLAY
             k.destroy(obstacle);
         });
 
         k.onCollide('player', 'heart', (player, heart) => {
-            // Check if heart still exists before processing
-            if (!heart.exists()) return;
-            
             // Reduce fear
             window.gameState.fear = Math.max(0, window.gameState.fear - 25);
             
@@ -187,9 +179,7 @@ export function initGame(k) {
                 k.move(0, -50)
             ]);
             
-            // FIX: Safe removal - remove tags first then destroy
-            heart.unuse('heart');
-            heart.unuse('scroll');
+            // FIX: Safe removal for KAPLAY
             k.destroy(heart);
         });
 

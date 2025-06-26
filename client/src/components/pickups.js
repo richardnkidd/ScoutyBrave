@@ -29,9 +29,7 @@ export function spawnHeart(k, gameSpeed) {
 export function updateHearts(k) {
     k.get('heart').forEach(heart => {
         if (heart.pos.x < k.camPos().x - 150) {
-            // FIX: Remove tags before destroying to prevent collision callback issues
-            heart.unuse('heart');
-            heart.unuse('scroll');
+            // FIX: Safe destruction for KAPLAY
             k.destroy(heart);
         }
     });

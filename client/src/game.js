@@ -3,8 +3,8 @@ import { initGame } from './scenes/game.js';
 import { initGameOver } from './scenes/gameover.js';
 import { initAudio } from './utils/audio.js';
 
-// Initialize Kaboom
-const k = kaboom({
+// Initialize KAPLAY (Kaboom successor)
+const k = kaplay({
     canvas: document.getElementById('gameCanvas'),
     width: 800,
     height: 600,
@@ -57,10 +57,10 @@ window.addLevelBackground = (k, op = 1) => {
         k.opacity(op),
     ]);
     
-    // Use k.wait instead of bg.onLoad for Kaboom.js compatibility
+    // Use k.wait instead of bg.onLoad for KAPLAY compatibility
     k.wait(0.1, () => {
         if (bg.width && bg.height) {
-            bg.use(k.scale(k.vec2(k.width()/bg.width, k.height()/bg.height)));  // FIX: safe scaling
+            bg.scaleTo(k.vec2(k.width()/bg.width, k.height()/bg.height));  // FIX: use scaleTo for KAPLAY
         }
     });
     

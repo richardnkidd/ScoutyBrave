@@ -37,15 +37,13 @@ export function createPlayer(k) {
         if (k.isKeyDown('down')) {
             if (!isCowering) {
                 isCowering = true;
-                player.use(k.scale(CROUCH_SCALE));      // FIX: safe scaling
-                player.use(k.area({ scale: CROUCH_SCALE }));
+                player.scaleTo(CROUCH_SCALE);      // FIX: use scaleTo for KAPLAY
                 player.opacity = 0.7;
                 player.angle = 10;
             }
         } else if (isCowering) {
             isCowering = false;
-            player.use(k.scale(BASE_SCALE));          // FIX: safe scaling
-            player.use(k.area({ scale: BASE_SCALE }));
+            player.scaleTo(BASE_SCALE);          // FIX: use scaleTo for KAPLAY
             player.opacity = 1;
             player.angle = 0;
         }

@@ -32,9 +32,7 @@ export function spawnObstacle(k, speed){
 export function updateObstacles(k){
     k.get('obstacle').forEach(o => {
         if (o.pos.x < k.camPos().x - 150) {
-            // FIX: Remove tags before destroying to prevent collision callback issues
-            o.unuse('obstacle');
-            o.unuse('scroll');
+            // FIX: Safe destruction for KAPLAY
             k.destroy(o);
         }
     });

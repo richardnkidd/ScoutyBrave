@@ -7,7 +7,7 @@ This is a 2D pixel-art adventure game called "Scouty the Brave" built with a mod
 ## System Architecture
 
 ### Frontend Architecture
-- **Game Engine**: Kaboom.js for 2D game mechanics and rendering
+- **Game Engine**: KAPLAY for 2D game mechanics and rendering
 - **UI Framework**: React with TypeScript for modern component-based UI
 - **Styling**: Tailwind CSS with Radix UI components for consistent design
 - **3D Support**: React Three Fiber and Drei for potential 3D elements
@@ -21,7 +21,7 @@ This is a 2D pixel-art adventure game called "Scouty the Brave" built with a mod
 
 ### Hybrid Game Architecture
 The project uses a dual approach:
-1. **Kaboom.js Scene System**: Traditional game scenes (title, game, gameover)
+1. **KAPLAY Scene System**: Traditional game scenes (title, game, gameover)
 2. **React Component System**: Modern UI overlays and interfaces
 
 ## Key Components
@@ -46,7 +46,7 @@ The project uses a dual approach:
 
 ## Data Flow
 
-1. **Game Initialization**: Kaboom.js initializes canvas and loads assets
+1. **Game Initialization**: KAPLAY initializes canvas and loads assets
 2. **Scene Transitions**: State-driven scene changes between title, game, and gameover
 3. **Player Input**: Keyboard controls for movement and actions
 4. **Collision Detection**: Real-time collision between player, obstacles, and pickups
@@ -56,7 +56,7 @@ The project uses a dual approach:
 ## External Dependencies
 
 ### Core Game Dependencies
-- **Kaboom.js**: 2D game engine for sprites, physics, and audio
+- **KAPLAY**: Modern 2D game engine (successor to Kaboom.js) for sprites, physics, and audio
 - **React Three Fiber**: 3D rendering capabilities for future expansion
 - **Web Audio API**: Browser-native audio processing
 
@@ -90,18 +90,19 @@ The project uses a dual approach:
 ## Changelog
 
 Recent Changes:
-- June 25, 2025: Initial setup with Kaboom.js game engine
+- June 25, 2025: Initial setup with KAPLAY game engine
 - June 25, 2025: Added pixel art sprites for Scouty, obstacles, and hearts
 - June 25, 2025: Implemented cityscape background with proper scaling
 - June 25, 2025: Fixed sprite scaling and visibility issues
 - June 26, 2025: Major architecture overhaul to fix critical errors:
   * Created config.js for centralized constants (GROUND_Y=500, speeds, scales)
-  * Fixed "onCollideUpdate is not a function" by using scaleTo() instead of direct scale assignment
+  * Fixed "onCollideUpdate is not a function" by migrating from deprecated Kaboom.js to KAPLAY
   * Aligned ground collider with grass band in cityscape background
   * Implemented proper auto-scrolling world mechanics with 'scroll' tagged objects
   * Fixed background edge scrolling with exact canvas scaling
-  * Restored safe component scaling that preserves area mixin and collision detection
+  * Updated all scaling operations to use KAPLAY's scaleTo() method
   * Camera follows player after reaching 1/3 screen position
+  * Migrated from Kaboom.js 3000 to KAPLAY 3001 for better compatibility and active maintenance
 
 ## User Preferences
 
