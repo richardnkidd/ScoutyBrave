@@ -28,13 +28,13 @@ window.gameState = {
     highScore: localStorage.getItem('scoutyHighScore') || 0
 };
 
-// Load sprites - using pixel art
-k.loadSprite('scouty', '/sprites/scouty.png');
-k.loadSprite('box', '/sprites/box.png');
-k.loadSprite('bag', '/sprites/bag.png');
-k.loadSprite('leaf', '/sprites/leaf.png');
-k.loadSprite('heart', '/sprites/heart.png');
-k.loadSprite('cityscape_bg', '/sprites/cityscape_bg.png');
+// Load sprites - using SVG sources for better visibility
+k.loadSprite('scouty', '/sprites/scouty.svg');
+k.loadSprite('box', '/sprites/box.svg');
+k.loadSprite('bag', '/sprites/bag.svg');
+k.loadSprite('leaf', '/sprites/leaf.svg');
+k.loadSprite('heart', '/sprites/heart.svg');
+k.loadSprite('cityscape_bg', '/sprites/cityscape_bg.svg');
 
 // Load sounds
 k.loadSound('background', '/sounds/background.mp3');
@@ -69,9 +69,14 @@ window.addLevelBackground = (k, op = 1) => {
     // Use k.wait instead of bg.onLoad for KAPLAY compatibility
     k.wait(0.1, () => {
         if (bg.width && bg.height) {
+            console.log('Background dimensions:', bg.width, 'x', bg.height);
+            console.log('Canvas dimensions:', k.width(), 'x', k.height());
             const scaleX = k.width() / bg.width;
             const scaleY = k.height() / bg.height;
             bg.scale = k.vec2(scaleX, scaleY);  // FIX: direct scale assignment for background (no collision)
+            console.log('Background scaled by:', scaleX, scaleY);
+        } else {
+            console.log('Background not ready, using default scale');
         }
     });
     

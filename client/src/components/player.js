@@ -5,7 +5,7 @@ export function createPlayer(k) {
     const player = k.add([
         k.sprite('scouty'),
         k.anchor('botleft'),
-        k.scale(BASE_SCALE),          // component stays intact
+        k.scale(BASE_SCALE * 2), // Make Scouty more visible          // component stays intact
         k.area({ scale: BASE_SCALE }),
         k.body(),
         k.pos(50, GROUND_Y),
@@ -37,13 +37,13 @@ export function createPlayer(k) {
         if (k.isKeyDown('down')) {
             if (!isCowering) {
                 isCowering = true;
-                player.scaleTo(CROUCH_SCALE);      // FIX: use scaleTo for KAPLAY
+                player.scaleTo(CROUCH_SCALE * 2);      // FIX: use scaleTo for KAPLAY with visibility
                 player.opacity = 0.7;
                 player.angle = 10;
             }
         } else if (isCowering) {
             isCowering = false;
-            player.scaleTo(BASE_SCALE);          // FIX: use scaleTo for KAPLAY
+            player.scaleTo(BASE_SCALE * 2);          // FIX: use scaleTo for KAPLAY with visibility
             player.opacity = 1;
             player.angle = 0;
         }
