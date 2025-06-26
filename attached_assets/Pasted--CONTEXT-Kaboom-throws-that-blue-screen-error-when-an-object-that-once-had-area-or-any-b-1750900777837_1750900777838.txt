@@ -1,0 +1,109 @@
+### CONTEXT
+Kaboom throws that blue-screen error when an object that once had **`area()`**
+(or any body / motion component) loses the mixin that defines
+`onCollideUpdate()`.  
+That happens in our code whenever we assign **`obj.scale = …`** directly,
+because the assignment **replaces** the entire scale component and
+cascades away the area mixin.
+
+### WHAT TO CHANGE
+1. **Never use direct property assignment `.scale =` on live game objects.**  
+   Use one of:  
+   * `obj.use(k.scale(newScale))` → adds a new scale component safely  
+   * `obj.scaleTo(newScale, duration?)` → tween, preserves mixins
+
+2. **Re-add `area({ scale })` anytime we swap the scale component**, so hitboxes still match.
+
+### EDIT THESE FILES
+#### 1️⃣ `/components/player.js`
+```js
+// FIX: constants
+const BASE_SCALE   = 0.35;
+const CROUCH_SCALE = 0.25;
+
+export function createPlayer(k) {
+  const groundY = k.height() - 100;
+
+  const player = k.add([
+    k.sprite('scouty'),
+    k.anchor('botleft'),
+    k.scale(BASE_SCALE),          // SAFE: initial component
+    k.area({ scale: BASE_SCALE }),
+    k.body(),
+    k.outline(1, k.rgb(0,0,0)),
+    k.pos(50, groundY),
+    'player',
+  ]);
+
+  let isCowering = false;
+
+  // Cower toggle — SAFE scaling
+  k.onUpdate(() => {
+    if (k.isKeyDown('down')) {
+      if (!isCowering) {
+        isCowering = true;
+        player.use(k.scale(CROUCH_SCALE));      // FIX
+        player.use(k.area({ scale: CROUCH_SCALE }));
+        player.opacity = 0.7;
+      }
+    } else if (isCowering) {
+      isCowering = false;
+      player.use(k.scale(BASE_SCALE));          // FIX
+      player.use(k.area({ scale: BASE_SCALE }));
+      player.opacity = 1;
+    }
+  });
+
+  /* jump / move code unchanged */
+  return player;
+}
+2️⃣ /components/pickups.js & /components/obstacles.js
+Search for any line like:
+
+js
+Copy
+Edit
+heart.scaleTo(scale);
+obstacle.scale(1);
+Both are fine.
+Remove or replace any line that does obj.scale = k.vec2(…) or similar:
+
+diff
+Copy
+Edit
+- heart.scale = k.vec2( scale, scale );
++ heart.use(k.scale(scale));        // FIX: keep mixins
+3️⃣ Global search → replace
+In the whole repo:
+
+php
+Copy
+Edit
+// BAD --------------------
+sprite.scale = ...
+
+// GOOD -------------------
+sprite.use(k.scale(newValue));
+sprite.use(k.area({ scale: newValue }));    // if it collides or has body()
+Apply wherever the direct assignment occurs (title-screen bobbing, etc.).
+
+4️⃣ /main.js – background is safe
+addLevelBackground() scales the bg after fixed().
+Because the bg doesn’t have area() or body(), direct assignment is OK,
+but for consistency switch to:
+
+js
+Copy
+Edit
+bg.use(k.scale(k.vec2(factor, factor)));   // FIX (optional)
+ACCEPTANCE CHECKS
+No blue-screen crash after idling & cowering 60 seconds.
+
+Hits with ground / obstacles still register.
+
+Scaling up & down (cower) doesn’t change hitbox weirdly (hard landings feel normal).
+
+DELIVERABLE
+Updated /components/player.js plus any other file lines where you replaced
+direct scale = … with use(k.scale()).
+Mark each edit with // FIX: so I can review the diff quickly.

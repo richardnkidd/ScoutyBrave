@@ -37,13 +37,15 @@ export function createPlayer(k) {
         if (k.isKeyDown('down')) {
             if (!isCowering) {
                 isCowering = true;
-                player.scaleTo(CROUCH_SCALE);   // FIX: use scaleTo, don't overwrite component
+                player.use(k.scale(CROUCH_SCALE));      // FIX: safe scaling
+                player.use(k.area({ scale: CROUCH_SCALE }));
                 player.opacity = 0.7;
                 player.angle = 10;
             }
         } else if (isCowering) {
             isCowering = false;
-            player.scaleTo(BASE_SCALE);       // restore
+            player.use(k.scale(BASE_SCALE));          // FIX: safe scaling
+            player.use(k.area({ scale: BASE_SCALE }));
             player.opacity = 1;
             player.angle = 0;
         }

@@ -60,7 +60,7 @@ window.addLevelBackground = (k, op = 1) => {
     // Use k.wait instead of bg.onLoad for Kaboom.js compatibility
     k.wait(0.1, () => {
         if (bg.width && bg.height) {
-            bg.scale = k.vec2(k.width()/bg.width, k.height()/bg.height);
+            bg.use(k.scale(k.vec2(k.width()/bg.width, k.height()/bg.height)));  // FIX: safe scaling
         }
     });
     
